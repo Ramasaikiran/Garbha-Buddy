@@ -1,10 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Script from 'next/script';
 
 export default function ClientRegisterPage() {
+  return (
+    <Suspense fallback={null}>
+      <ClientRegisterForm />
+    </Suspense>
+  );
+}
+
+function ClientRegisterForm() {
   const searchParams = useSearchParams();
   const companionId = searchParams.get('companionId');
 

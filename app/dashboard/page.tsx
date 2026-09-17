@@ -56,12 +56,20 @@ export default function DashboardPage() {
                 ₹{b.amount_paid} · {new Date(b.booking_date).toLocaleDateString()}
               </p>
               {b.status === 'active' && (
-                <Link
-                  href={`/bookings/${b.id}/chat`}
-                  className="mt-2 inline-block text-sm text-[#ffb703] underline"
-                >
-                  Coordinate tickets →
-                </Link>
+                <div className="mt-2 flex gap-4">
+                  <Link
+                    href={`/bookings/${b.id}/chat`}
+                    className="text-sm text-[#ffb703] underline"
+                  >
+                    Coordinate tickets →
+                  </Link>
+                  <Link
+                    href={`/bookings/${b.id}/checkin`}
+                    className="text-sm text-[#ffb703] underline"
+                  >
+                    Check in →
+                  </Link>
+                </div>
               )}
             </div>
           ))}

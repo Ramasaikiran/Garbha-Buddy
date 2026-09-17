@@ -30,6 +30,7 @@ function ClientRegisterForm() {
   const [error, setError] = useState('');
   const [companionPreference, setCompanionPreference] = useState<string | null>(null);
   const [companionName, setCompanionName] = useState('');
+  const [razorpayReady, setRazorpayReady] = useState(false);
 
   useEffect(() => {
     if (!companionId) return;
@@ -53,6 +54,10 @@ function ClientRegisterForm() {
   }
 
   async function payForBooking(bookingId: string) {
+    if (!(window as any).Razorpay) {
+      throw new Error('Payment is still loading — try again in a moment.');
+    }
+
     const orderRes = await fetch('/api/bookings/create-order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -244,13 +249,19 @@ function ClientRegisterForm() {
 
           <button
             type="submit"
-            disabled={status === 'submitting' || genderBlocked}
+            disabled={
+              status === 'submitting' ||
+              genderBlocked ||
+              (!!companionId && !razorpayReady)
+            }
             className="w-full rounded-xl bg-[#ffb703] py-3 font-semibold text-[#1a0b2e] transition hover:bg-[#ffc93c] disabled:opacity-50"
           >
             {status === 'submitting'
               ? 'Submitting…'
               : genderBlocked
               ? 'Payment unavailable'
+              : companionId && !razorpayReady
+              ? 'Loading payment…'
               : companionId
               ? 'Confirm & pay'
               : 'Register'}
@@ -258,7 +269,11 @@ function ClientRegisterForm() {
         </form>
       </div>
 
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
+      <Script
+        src="https://checkout.razorpay.com/v1/checkout.js"
+        strategy="afterInteractive"
+        onLoad={() => setRazorpayReady(true)}
+      />
 
       <style jsx global>{`
         .input {

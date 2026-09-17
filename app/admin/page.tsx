@@ -1,57 +1,63 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function AdminPage() {
-  const [secret, setSecret] = useState('');
   const [pending, setPending] = useState<any[]>([]);
-  const [unlocked, setUnlocked] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
-  async function load(s: string) {
-    const res = await fetch('/api/admin/companions', { headers: { 'x-admin-secret': s } });
-    if (!res.ok) return false;
+  async function load() {
+    const res = await fetch('/api/admin/companions');
+    if (res.status === 401) {
+      router.push('/admin/login');
+      return;
+    }
     const data = await res.json();
-    setPending(data.pending);
-    return true;
+    setPending(data.pending || []);
+    setLoading(false);
   }
 
-  async function unlock(e: React.FormEvent) {
-    e.preventDefault();
-    if (await load(secret)) setUnlocked(true);
-  }
+  useEffect(() => {
+    load();
+  }, []);
 
   async function decide(companionId: string, approve: boolean) {
-    await fetch('/api/admin/companions', {
+    const res = await fetch('/api/admin/companions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-admin-secret': secret },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ companionId, approve }),
     });
+    if (res.status === 401) {
+      router.push('/admin/login');
+      return;
+    }
     setPending((p) => p.filter((c) => c.id !== companionId));
   }
 
-  if (!unlocked) {
+  async function logout() {
+    await fetch('/api/admin/login', { method: 'DELETE' });
+    router.push('/admin/login');
+  }
+
+  if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#1a0b2e] text-white">
-        <form onSubmit={unlock} className="space-y-3 text-center">
-          <input
-            type="password"
-            value={secret}
-            onChange={(e) => setSecret(e.target.value)}
-            placeholder="Admin secret"
-            className="rounded-lg border border-white/20 bg-black/30 px-3 py-2"
-          />
-          <button className="ml-2 rounded-lg bg-[#ffb703] px-4 py-2 font-semibold text-[#1a0b2e]">
-            Enter
-          </button>
-        </form>
+      <main className="flex min-h-screen items-center justify-center" style={{ background: 'var(--ink)' }}>
+        <p className="text-white/50">Loading…</p>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#1a0b2e] px-4 py-12 text-white">
+    <main className="min-h-screen px-4 py-12 text-white" style={{ background: 'var(--ink)' }}>
       <div className="mx-auto max-w-2xl">
-        <h1 className="font-serif text-3xl font-bold">Pending companions</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="font-display text-3xl font-bold">Pending companions</h1>
+          <button onClick={logout} className="text-sm text-white/40 underline">
+            Log out
+          </button>
+        </div>
         <div className="mt-6 space-y-4">
           {pending.length === 0 && <p className="text-white/50">Nothing to review.</p>}
           {pending.map((c) => (

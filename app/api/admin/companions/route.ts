@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-
-function isAdmin(request: Request) {
-  return request.headers.get('x-admin-secret') === process.env.ADMIN_SECRET;
-}
+import { isAdminRequest } from '@/lib/admin-session';
 
 export async function GET(request: Request) {
-  if (!isAdmin(request)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!(await isAdminRequest(request))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
   const result = await db.query(
     `SELECT u.id, u.name, u.phone_number, u.aadhaar_front_url, u.aadhaar_back_url,
@@ -21,7 +20,9 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  if (!isAdmin(request)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!(await isAdminRequest(request))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
   const { companionId, approve } = await request.json();
   await db.query(

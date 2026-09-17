@@ -8,32 +8,55 @@ export default function LoginPage() {
   const [otp, setOtp] = useState('');
   const [step, setStep] = useState<'phone' | 'otp'>('phone');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [devOtp, setDevOtp] = useState<string | null>(null);
   const router = useRouter();
 
   async function requestOtp(e: React.FormEvent) {
     e.preventDefault();
     setError('');
-    const res = await fetch('/api/auth/request-otp', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phoneNumber }),
-    });
-    const data = await res.json();
-    if (!res.ok) return setError(data.error);
-    setStep('otp');
+    setLoading(true);
+    try {
+      const res = await fetch('/api/auth/request-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'Could not send OTP');
+        return;
+      }
+      setDevOtp(data.devOtp || null);
+      setStep('otp');
+    } catch {
+      setError('Network error — check your connection and try again.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function verifyOtp(e: React.FormEvent) {
     e.preventDefault();
     setError('');
-    const res = await fetch('/api/auth/verify-otp', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phoneNumber, otp }),
-    });
-    const data = await res.json();
-    if (!res.ok) return setError(data.error);
-    router.push('/dashboard');
+    setLoading(true);
+    try {
+      const res = await fetch('/api/auth/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber, otp }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'Could not verify OTP');
+        return;
+      }
+      router.push('/dashboard');
+    } catch {
+      setError('Network error — check your connection and try again.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -65,10 +88,24 @@ export default function LoginPage() {
           />
         )}
 
+        {devOtp && step === 'otp' && (
+          <p className="rounded-lg bg-[#ffb703]/10 px-3 py-2 text-xs text-[#ffb703]">
+            SMS isn't wired up yet — your test OTP is <strong>{devOtp}</strong>.
+          </p>
+        )}
+
         {error && <p className="text-sm text-[#ff4d6d]">{error}</p>}
 
-        <button className="w-full rounded-xl bg-[#ffb703] py-3 font-semibold text-[#1a0b2e]">
-          {step === 'phone' ? 'Send OTP' : 'Verify & log in'}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full rounded-xl bg-[#ffb703] py-3 font-semibold text-[#1a0b2e] disabled:opacity-50"
+        >
+          {loading
+            ? 'Please wait…'
+            : step === 'phone'
+            ? 'Send OTP'
+            : 'Verify & log in'}
         </button>
       </form>
     </main>

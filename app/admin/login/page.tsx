@@ -29,21 +29,14 @@ export default function AdminLoginPage() {
 
   return (
     <main
-      className="flex min-h-screen items-center justify-center px-4"
-      style={{ background: 'var(--ink)' }}
+      className="flex min-h-screen items-center justify-center px-6"
+      style={{ background: 'var(--paper)' }}
     >
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-sm space-y-4 rounded-2xl border p-8 backdrop-blur"
-        style={{ borderColor: 'var(--thread)', background: 'rgba(255,255,255,0.04)' }}
-      >
-        <p
-          className="text-xs font-semibold uppercase tracking-[0.3em]"
-          style={{ color: 'var(--marigold)' }}
-        >
+      <form onSubmit={handleSubmit} className="card w-full max-w-sm space-y-5 p-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.28em]" style={{ color: 'var(--gold)' }}>
           Admin
         </p>
-        <h1 className="font-display text-2xl font-bold text-white">Sign in</h1>
+        <h1 className="font-display text-2xl font-medium">Sign in</h1>
 
         <input
           type="password"
@@ -52,17 +45,12 @@ export default function AdminLoginPage() {
           value={secret}
           onChange={(e) => setSecret(e.target.value)}
           placeholder="Admin secret"
-          className="w-full rounded-xl border border-white/15 bg-black/30 px-3 py-2 text-white"
+          className="field-input"
         />
 
-        {error && <p className="text-sm" style={{ color: 'var(--rani-pink)' }}>{error}</p>}
+        {error && <p className="text-sm" style={{ color: 'var(--maroon)' }}>{error}</p>}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-xl py-3 font-semibold text-[#1a0b2e] disabled:opacity-50"
-          style={{ background: 'var(--marigold)' }}
-        >
+        <button type="submit" disabled={loading} className="btn-primary w-full">
           {loading ? 'Signing in…' : 'Sign in'}
         </button>
       </form>

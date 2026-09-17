@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Script from 'next/script';
+import { CheckIcon, AlertIcon } from '@/components/icons';
 
 export default function ClientRegisterPage() {
   return (
@@ -118,12 +119,15 @@ function ClientRegisterForm() {
 
   if (status === 'done') {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#1a0b2e] px-4 text-white">
+      <main
+        className="flex min-h-screen items-center justify-center px-6"
+        style={{ background: 'var(--paper)' }}
+      >
         <div className="text-center">
-          <p className="text-4xl">💃</p>
-          <h1 className="mt-3 font-serif text-2xl font-bold">You're booked in!</h1>
-          <p className="mt-2 text-white/60">
-            You'll get your OTP and payment link on WhatsApp shortly.
+          <CheckIcon className="mx-auto h-9 w-9" style={{ color: 'var(--gold)' }} />
+          <h1 className="font-display mt-4 text-2xl font-medium">You're booked in</h1>
+          <p className="mt-2 text-sm" style={{ color: 'var(--ink-60)' }}>
+            You'll get your OTP and payment confirmation on WhatsApp shortly.
           </p>
         </div>
       </main>
@@ -131,27 +135,27 @@ function ClientRegisterForm() {
   }
 
   return (
-    <main className="min-h-screen bg-[#1a0b2e] px-4 py-12 text-white">
-      <div className="mx-auto max-w-md rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur">
-        <p className="text-sm font-semibold tracking-[0.3em] text-[#ffb703]">
-          NAVRATRI · GARBA BUDDY
+    <main style={{ background: 'var(--paper)' }} className="min-h-screen px-6 py-16">
+      <div className="card mx-auto max-w-md p-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.28em]" style={{ color: 'var(--gold)' }}>
+          Garba Buddy
         </p>
-        <h1 className="mt-2 font-serif text-3xl font-bold">
-          {companionId ? 'One step to confirm' : "Find your Garba buddy"}
+        <h1 className="font-display mt-3 text-3xl font-medium leading-tight">
+          {companionId ? 'One step to confirm' : 'Find your Garba buddy'}
         </h1>
-        <p className="mt-2 text-sm text-white/60">
+        <p className="mt-2 text-sm" style={{ color: 'var(--ink-60)' }}>
           {companionId
             ? 'A few details and your booking is set.'
             : 'Register to browse verified dance companions near you.'}
         </p>
 
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+        <form onSubmit={handleSubmit} className="mt-7 space-y-5">
           <Field label="Full name">
             <input
               required
               value={form.name}
               onChange={(e) => update('name', e.target.value)}
-              className="input"
+              className="field-input"
               placeholder="Your name"
             />
           </Field>
@@ -160,7 +164,7 @@ function ClientRegisterForm() {
               required
               value={form.gender}
               onChange={(e) => update('gender', e.target.value)}
-              className="input"
+              className="field-input"
             >
               <option value="">Select</option>
               <option value="female">Female</option>
@@ -170,32 +174,37 @@ function ClientRegisterForm() {
           </Field>
 
           {genderBlocked && (
-            <p className="rounded-lg bg-[#ff4d6d]/10 px-3 py-2 text-xs text-[#ff4d6d]">
-              {companionName} only accepts female clients. Payment is disabled.
-              Try another companion on the browse page.
+            <p
+              className="flex items-start gap-2 rounded-lg px-3 py-2.5 text-xs"
+              style={{ background: 'rgba(122, 36, 56, 0.06)', color: 'var(--maroon)' }}
+            >
+              <AlertIcon className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+              {companionName} only accepts female clients. Payment is disabled —
+              try another companion on the browse page.
             </p>
           )}
+
           <Field label="Phone number">
             <input
               required
               value={form.phoneNumber}
               onChange={(e) => update('phoneNumber', e.target.value)}
-              className="input"
+              className="field-input"
               placeholder="98765 43210"
             />
           </Field>
 
-          <div className="rounded-xl border border-[#ffb703]/20 bg-black/20 p-4">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[#ffb703]">
-              Identity verification (kept private, used for on-site matching)
+          <div className="rounded-xl p-5" style={{ background: 'var(--paper)', border: '1px solid var(--line)' }}>
+            <p className="mb-4 text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--gold)' }}>
+              Identity verification — kept private, used for on-site matching
             </p>
-            <div className="space-y-3">
+            <div className="space-y-4">
               <Field label="Aadhaar front (upload link)">
                 <input
                   required
                   value={form.aadhaarFrontUrl}
                   onChange={(e) => update('aadhaarFrontUrl', e.target.value)}
-                  className="input"
+                  className="field-input"
                   placeholder="Link to Aadhaar front image"
                 />
               </Field>
@@ -204,7 +213,7 @@ function ClientRegisterForm() {
                   required
                   value={form.aadhaarBackUrl}
                   onChange={(e) => update('aadhaarBackUrl', e.target.value)}
-                  className="input"
+                  className="field-input"
                   placeholder="Link to Aadhaar back image"
                 />
               </Field>
@@ -213,7 +222,7 @@ function ClientRegisterForm() {
                   maxLength={4}
                   value={form.aadhaarLast4}
                   onChange={(e) => update('aadhaarLast4', e.target.value.replace(/\D/g, ''))}
-                  className="input"
+                  className="field-input"
                   placeholder="1234"
                 />
               </Field>
@@ -222,7 +231,7 @@ function ClientRegisterForm() {
                   required
                   value={form.selfieUrl}
                   onChange={(e) => update('selfieUrl', e.target.value)}
-                  className="input"
+                  className="field-input"
                   placeholder="Clear face photo, matched at check-in"
                 />
               </Field>
@@ -230,7 +239,7 @@ function ClientRegisterForm() {
           </div>
 
           {companionId && !genderBlocked && (
-            <label className="flex items-start gap-2 text-xs text-white/60">
+            <label className="flex items-start gap-2.5 text-xs" style={{ color: 'var(--ink-60)' }}>
               <input
                 type="checkbox"
                 checked={liabilityAccepted}
@@ -245,7 +254,7 @@ function ClientRegisterForm() {
             </label>
           )}
 
-          {error && <p className="text-sm text-[#ff4d6d]">{error}</p>}
+          {error && <p className="text-sm" style={{ color: 'var(--maroon)' }}>{error}</p>}
 
           <button
             type="submit"
@@ -254,7 +263,7 @@ function ClientRegisterForm() {
               genderBlocked ||
               (!!companionId && !razorpayReady)
             }
-            className="w-full rounded-xl bg-[#ffb703] py-3 font-semibold text-[#1a0b2e] transition hover:bg-[#ffc93c] disabled:opacity-50"
+            className="btn-primary w-full"
           >
             {status === 'submitting'
               ? 'Submitting…'
@@ -274,22 +283,6 @@ function ClientRegisterForm() {
         strategy="afterInteractive"
         onLoad={() => setRazorpayReady(true)}
       />
-
-      <style jsx global>{`
-        .input {
-          width: 100%;
-          border-radius: 0.75rem;
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          background: rgba(0, 0, 0, 0.25);
-          padding: 0.65rem 0.9rem;
-          color: white;
-          font-size: 0.95rem;
-        }
-        .input:focus {
-          outline: none;
-          border-color: #ffb703;
-        }
-      `}</style>
     </main>
   );
 }
@@ -297,9 +290,7 @@ function ClientRegisterForm() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-white/50">
-        {label}
-      </span>
+      <span className="field-label">{label}</span>
       {children}
     </label>
   );

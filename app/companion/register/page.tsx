@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { CheckIcon } from '@/components/icons';
 
 const CITIES = ['Ahmedabad', 'Mumbai', 'Surat', 'Vadodara', 'Rajkot', 'Bengaluru', 'Delhi NCR'];
 const TIERS = [
@@ -67,66 +68,50 @@ export default function CompanionRegisterPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#1a0b2e] relative overflow-hidden px-4 py-12">
-      {/* Bandhani-dot backdrop */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-20"
-        style={{
-          backgroundImage:
-            'radial-gradient(circle, #ffb703 1.5px, transparent 1.5px), radial-gradient(circle, #ff4d6d 1.5px, transparent 1.5px)',
-          backgroundSize: '28px 28px, 28px 28px',
-          backgroundPosition: '0 0, 14px 14px',
-        }}
-      />
-      <div className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-[#ff4d6d] blur-[100px] opacity-30" />
-      <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-[#ffb703] blur-[100px] opacity-20" />
-
-      <div className="relative mx-auto max-w-xl">
-        <div className="mb-8 text-center">
-          <p className="mb-2 text-sm font-semibold tracking-[0.3em] text-[#ffb703]">
-            NAVRATRI · GARBA BUDDY
+    <main style={{ background: 'var(--paper)' }} className="min-h-screen px-6 py-16">
+      <div className="mx-auto max-w-lg">
+        <div className="mb-10 text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.28em]" style={{ color: 'var(--gold)' }}>
+            Become a companion
           </p>
-          <h1 className="font-serif text-4xl font-bold text-white sm:text-5xl">
-            Dance for Money.
+          <h1 className="font-display mt-4 text-4xl font-medium leading-tight">
+            Dance for pay.
             <br />
-            <span className="text-[#ff4d6d]">Get Discovered.</span>
+            Get discovered.
           </h1>
-          <p className="mt-3 text-white/60">
-            Register as a companion. Get your own booking link to share.
+          <p className="mt-3 text-sm" style={{ color: 'var(--ink-60)' }}>
+            Register once, get your own booking link to share.
           </p>
         </div>
 
         {result ? (
-          <div className="rounded-2xl border border-[#ffb703]/30 bg-white/5 p-8 text-center backdrop-blur">
-            <p className="text-4xl">🪩</p>
-            <h2 className="mt-3 font-serif text-2xl font-bold text-white">You're live!</h2>
-            <p className="mt-2 text-sm text-white/60">
+          <div className="card p-8 text-center">
+            <CheckIcon className="mx-auto h-8 w-8" style={{ color: 'var(--gold)' }} />
+            <h2 className="font-display mt-4 text-2xl font-medium">You're live</h2>
+            <p className="mt-2 text-sm" style={{ color: 'var(--ink-60)' }}>
               Share this link on Instagram, WhatsApp status, or your bio.
               Anyone who books through it comes straight to you.
             </p>
-            <div className="mt-5 flex items-center gap-2 rounded-xl bg-black/30 p-3">
-              <code className="flex-1 truncate text-left text-sm text-[#ffb703]">
+            <div
+              className="mt-6 flex items-center gap-2 rounded-xl p-3"
+              style={{ background: 'var(--paper)', border: '1px solid var(--line)' }}
+            >
+              <code className="flex-1 truncate text-left text-sm" style={{ color: 'var(--ink)' }}>
                 {result.shareableLink}
               </code>
-              <button
-                onClick={copyLink}
-                className="shrink-0 rounded-lg bg-[#ff4d6d] px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-[#ff2e52]"
-              >
-                {copied ? 'Copied!' : 'Copy'}
+              <button onClick={copyLink} className="btn-primary shrink-0 !px-4 !py-1.5 !text-xs">
+                {copied ? 'Copied' : 'Copy'}
               </button>
             </div>
           </div>
         ) : (
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-4 rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur sm:p-8"
-          >
+          <form onSubmit={handleSubmit} className="card space-y-5 p-6 sm:p-8">
             <Field label="Full name">
               <input
                 required
                 value={form.name}
                 onChange={(e) => update('name', e.target.value)}
-                className="input"
+                className="field-input"
                 placeholder="Priya Patel"
               />
             </Field>
@@ -137,7 +122,7 @@ export default function CompanionRegisterPage() {
                   required
                   value={form.gender}
                   onChange={(e) => update('gender', e.target.value)}
-                  className="input"
+                  className="field-input"
                 >
                   <option value="">Select</option>
                   <option value="female">Female</option>
@@ -150,7 +135,7 @@ export default function CompanionRegisterPage() {
                   required
                   value={form.phoneNumber}
                   onChange={(e) => update('phoneNumber', e.target.value)}
-                  className="input"
+                  className="field-input"
                   placeholder="98765 43210"
                 />
               </Field>
@@ -161,7 +146,7 @@ export default function CompanionRegisterPage() {
                 <select
                   value={form.city}
                   onChange={(e) => update('city', e.target.value)}
-                  className="input"
+                  className="field-input"
                 >
                   {CITIES.map((c) => (
                     <option key={c} value={c}>
@@ -174,7 +159,7 @@ export default function CompanionRegisterPage() {
                 <select
                   value={form.tier}
                   onChange={(e) => update('tier', e.target.value)}
-                  className="input"
+                  className="field-input"
                 >
                   {TIERS.map((t) => (
                     <option key={t.value} value={t.value}>
@@ -190,22 +175,22 @@ export default function CompanionRegisterPage() {
                 required
                 value={form.videoProofUrl}
                 onChange={(e) => update('videoProofUrl', e.target.value)}
-                className="input"
+                className="field-input"
                 placeholder="Drive/Instagram link showing you dance"
               />
             </Field>
 
-            <div className="rounded-xl border border-[#ffb703]/20 bg-black/20 p-4">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[#ffb703]">
-                Identity verification (kept private, used for on-site matching)
+            <div className="rounded-xl p-5" style={{ background: 'var(--paper)', border: '1px solid var(--line)' }}>
+              <p className="mb-4 text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--gold)' }}>
+                Identity verification — kept private, used for on-site matching
               </p>
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <Field label="Aadhaar front (upload link)">
                   <input
                     required
                     value={form.aadhaarFrontUrl}
                     onChange={(e) => update('aadhaarFrontUrl', e.target.value)}
-                    className="input"
+                    className="field-input"
                     placeholder="Link to Aadhaar front image"
                   />
                 </Field>
@@ -214,7 +199,7 @@ export default function CompanionRegisterPage() {
                     required
                     value={form.aadhaarBackUrl}
                     onChange={(e) => update('aadhaarBackUrl', e.target.value)}
-                    className="input"
+                    className="field-input"
                     placeholder="Link to Aadhaar back image"
                   />
                 </Field>
@@ -223,7 +208,7 @@ export default function CompanionRegisterPage() {
                     maxLength={4}
                     value={form.aadhaarLast4}
                     onChange={(e) => update('aadhaarLast4', e.target.value.replace(/\D/g, ''))}
-                    className="input"
+                    className="field-input"
                     placeholder="1234"
                   />
                 </Field>
@@ -232,7 +217,7 @@ export default function CompanionRegisterPage() {
                     required
                     value={form.selfieUrl}
                     onChange={(e) => update('selfieUrl', e.target.value)}
-                    className="input"
+                    className="field-input"
                     placeholder="Clear face photo, matched at check-in"
                   />
                 </Field>
@@ -243,7 +228,7 @@ export default function CompanionRegisterPage() {
               <select
                 value={form.preference}
                 onChange={(e) => update('preference', e.target.value)}
-                className="input"
+                className="field-input"
               >
                 <option value="everyone">Everyone</option>
                 <option value="girls_only">Girls only</option>
@@ -254,39 +239,19 @@ export default function CompanionRegisterPage() {
               <input
                 value={form.availabilityDates}
                 onChange={(e) => update('availabilityDates', e.target.value)}
-                className="input"
+                className="field-input"
                 placeholder="2026-10-12, 2026-10-13"
               />
             </Field>
 
-            {error && <p className="text-sm text-[#ff4d6d]">{error}</p>}
+            {error && <p className="text-sm" style={{ color: 'var(--maroon)' }}>{error}</p>}
 
-            <button
-              type="submit"
-              disabled={status === 'submitting'}
-              className="w-full rounded-xl bg-[#ffb703] py-3 font-semibold text-[#1a0b2e] transition hover:bg-[#ffc93c] disabled:opacity-50"
-            >
+            <button type="submit" disabled={status === 'submitting'} className="btn-primary w-full">
               {status === 'submitting' ? 'Registering…' : 'Get my booking link'}
             </button>
           </form>
         )}
       </div>
-
-      <style jsx global>{`
-        .input {
-          width: 100%;
-          border-radius: 0.75rem;
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          background: rgba(0, 0, 0, 0.25);
-          padding: 0.65rem 0.9rem;
-          color: white;
-          font-size: 0.95rem;
-        }
-        .input:focus {
-          outline: none;
-          border-color: #ffb703;
-        }
-      `}</style>
     </main>
   );
 }
@@ -294,9 +259,7 @@ export default function CompanionRegisterPage() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-white/50">
-        {label}
-      </span>
+      <span className="field-label">{label}</span>
       {children}
     </label>
   );

@@ -24,29 +24,33 @@ export default async function BookCompanionPage({ params }: { params: { slug: st
   if (!companion) notFound();
 
   return (
-    <main className="min-h-screen bg-[#1a0b2e] px-4 py-12 text-white">
-      <div className="mx-auto max-w-lg rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur">
-        <p className="text-sm font-semibold tracking-[0.3em] text-[#ffb703]">
-          NAVRATRI · GARBA BUDDY
+    <main style={{ background: 'var(--paper)' }} className="min-h-screen px-6 py-16">
+      <div className="card mx-auto max-w-lg p-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.28em]" style={{ color: 'var(--gold)' }}>
+          Garba Buddy
         </p>
-        <h1 className="mt-2 font-serif text-3xl font-bold">{companion.name}</h1>
-        <p className="mt-1 text-white/60">{companion.city}</p>
+        <h1 className="font-display mt-3 text-3xl font-medium">{companion.name}</h1>
+        <p className="mt-1 text-sm" style={{ color: 'var(--ink-60)' }}>{companion.city}</p>
         {companion.preference === 'girls_only' && (
-          <span className="mt-2 inline-block rounded-full bg-[#ff4d6d]/15 px-3 py-1 text-xs font-semibold text-[#ff4d6d]">
+          <span
+            className="mt-3 inline-block rounded-full px-3 py-1 text-xs font-medium"
+            style={{ background: 'rgba(122, 36, 56, 0.08)', color: 'var(--maroon)' }}
+          >
             Girls only
           </span>
         )}
 
-        <div className="mt-5 rounded-xl bg-black/30 p-4">
-          <p className="text-xs uppercase tracking-wide text-white/50">Tier</p>
-          <p className="mt-1 font-semibold text-[#ffb703]">{TIER_LABEL[companion.tier]}</p>
+        <div className="mt-6 rounded-xl p-4" style={{ background: 'var(--paper)', border: '1px solid var(--line)' }}>
+          <p className="text-xs uppercase tracking-wide" style={{ color: 'var(--ink-40)' }}>Tier</p>
+          <p className="mt-1 font-medium" style={{ color: 'var(--gold)' }}>{TIER_LABEL[companion.tier]}</p>
         </div>
 
         <a
           href={companion.video_proof_url}
           target="_blank"
           rel="noreferrer"
-          className="mt-4 block text-sm text-[#ff4d6d] underline"
+          className="mt-5 inline-block text-sm underline"
+          style={{ color: 'var(--gold-deep)' }}
         >
           Watch dance proof video →
         </a>

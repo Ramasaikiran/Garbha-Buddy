@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { AlertIcon, CheckIcon } from '@/components/icons';
 
 export default function CheckinPage({ params }: { params: { bookingId: string } }) {
   const [booking, setBooking] = useState<any>(null);
@@ -42,37 +43,41 @@ export default function CheckinPage({ params }: { params: { bookingId: string } 
 
   if (!booking) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#1a0b2e] text-white">
-        <p className="text-white/50">Loading…</p>
+      <main className="flex min-h-screen items-center justify-center" style={{ background: 'var(--paper)' }}>
+        <p style={{ color: 'var(--ink-40)' }}>Loading…</p>
       </main>
     );
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#1a0b2e] px-4 text-white">
-      <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-white/5 p-8 text-center backdrop-blur">
+    <main
+      className="flex min-h-screen items-center justify-center px-6"
+      style={{ background: 'var(--paper)' }}
+    >
+      <div className="card w-full max-w-sm p-8 text-center">
         {step === 'match' && (
           <>
-            <p className="text-sm font-semibold tracking-[0.3em] text-[#ffb703]">CHECK-IN</p>
-            <h1 className="mt-2 font-serif text-2xl font-bold">Is this {booking.companion_name}?</h1>
+            <p className="text-xs font-semibold uppercase tracking-[0.28em]" style={{ color: 'var(--gold)' }}>
+              Check-in
+            </p>
+            <h1 className="font-display mt-2 text-2xl font-medium">Is this {booking.companion_name}?</h1>
             <img
               src={booking.selfie_url}
               alt="Registered companion selfie"
-              className="mx-auto mt-4 h-48 w-48 rounded-xl object-cover"
+              className="mx-auto mt-5 h-48 w-48 rounded-xl object-cover"
+              style={{ border: '1px solid var(--line)' }}
             />
-            <p className="mt-3 text-sm text-white/60">
+            <p className="mt-4 text-sm" style={{ color: 'var(--ink-60)' }}>
               Compare this photo to who's in front of you.
             </p>
-            <div className="mt-5 flex flex-col gap-2">
-              <button
-                onClick={confirmMatch}
-                className="rounded-xl bg-[#ffb703] py-3 font-semibold text-[#1a0b2e]"
-              >
+            <div className="mt-6 flex flex-col gap-2.5">
+              <button onClick={confirmMatch} className="btn-primary">
                 Yes, this is them
               </button>
               <button
                 onClick={reportMismatch}
-                className="rounded-xl border border-[#ff4d6d]/40 py-3 font-semibold text-[#ff4d6d]"
+                className="rounded-full border py-3 text-sm font-semibold"
+                style={{ borderColor: 'var(--maroon)', color: 'var(--maroon)' }}
               >
                 Different person showed up
               </button>
@@ -81,28 +86,30 @@ export default function CheckinPage({ params }: { params: { bookingId: string } 
         )}
 
         {step === 'otp' && (
-          <form onSubmit={submitOtp} className="space-y-4">
-            <p className="text-sm font-semibold tracking-[0.3em] text-[#ffb703]">CHECK-IN</p>
-            <h1 className="font-serif text-2xl font-bold">Enter the OTP</h1>
-            <p className="text-sm text-white/60">Ask {booking.companion_name} for the code.</p>
+          <form onSubmit={submitOtp} className="space-y-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em]" style={{ color: 'var(--gold)' }}>
+              Check-in
+            </p>
+            <h1 className="font-display text-2xl font-medium">Enter the OTP</h1>
+            <p className="text-sm" style={{ color: 'var(--ink-60)' }}>
+              Ask {booking.companion_name} for the code.
+            </p>
             <input
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
               placeholder="6-digit code"
-              className="w-full rounded-xl border border-white/15 bg-black/30 px-3 py-2 text-center"
+              className="field-input text-center"
             />
-            {error && <p className="text-sm text-[#ff4d6d]">{error}</p>}
-            <button className="w-full rounded-xl bg-[#ffb703] py-3 font-semibold text-[#1a0b2e]">
-              Confirm check-in
-            </button>
+            {error && <p className="text-sm" style={{ color: 'var(--maroon)' }}>{error}</p>}
+            <button className="btn-primary w-full">Confirm check-in</button>
           </form>
         )}
 
         {step === 'rejected' && (
           <>
-            <p className="text-4xl">⚠️</p>
-            <h1 className="mt-3 font-serif text-2xl font-bold">Reported</h1>
-            <p className="mt-2 text-sm text-white/60">
+            <AlertIcon className="mx-auto h-8 w-8" style={{ color: 'var(--maroon)' }} />
+            <h1 className="font-display mt-4 text-2xl font-medium">Reported</h1>
+            <p className="mt-2 text-sm" style={{ color: 'var(--ink-60)' }}>
               Booking cancelled. Our team will follow up on your refund.
             </p>
           </>
@@ -110,9 +117,9 @@ export default function CheckinPage({ params }: { params: { bookingId: string } 
 
         {step === 'done' && (
           <>
-            <p className="text-4xl">💃</p>
-            <h1 className="mt-3 font-serif text-2xl font-bold">Checked in!</h1>
-            <p className="mt-2 text-sm text-white/60">Have a great Garba night.</p>
+            <CheckIcon className="mx-auto h-8 w-8" style={{ color: 'var(--gold)' }} />
+            <h1 className="font-display mt-4 text-2xl font-medium">Checked in</h1>
+            <p className="mt-2 text-sm" style={{ color: 'var(--ink-60)' }}>Have a great Garba night.</p>
           </>
         )}
       </div>

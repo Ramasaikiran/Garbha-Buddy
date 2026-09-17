@@ -60,13 +60,18 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#1a0b2e] px-4 text-white">
+    <main
+      className="flex min-h-screen items-center justify-center px-6"
+      style={{ background: 'var(--paper)' }}
+    >
       <form
         onSubmit={step === 'phone' ? requestOtp : verifyOtp}
-        className="w-full max-w-sm space-y-4 rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur"
+        className="card w-full max-w-sm space-y-5 p-8"
       >
-        <p className="text-sm font-semibold tracking-[0.3em] text-[#ffb703]">LOG IN</p>
-        <h1 className="font-serif text-2xl font-bold">
+        <p className="text-xs font-semibold uppercase tracking-[0.28em]" style={{ color: 'var(--gold)' }}>
+          Log in
+        </p>
+        <h1 className="font-display text-2xl font-medium">
           {step === 'phone' ? 'Enter your phone' : 'Enter the OTP'}
         </h1>
 
@@ -76,7 +81,7 @@ export default function LoginPage() {
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
             placeholder="98765 43210"
-            className="w-full rounded-xl border border-white/15 bg-black/30 px-3 py-2"
+            className="field-input"
           />
         ) : (
           <input
@@ -84,23 +89,22 @@ export default function LoginPage() {
             value={otp}
             onChange={(e) => setOtp(e.target.value)}
             placeholder="6-digit code"
-            className="w-full rounded-xl border border-white/15 bg-black/30 px-3 py-2"
+            className="field-input"
           />
         )}
 
         {devOtp && step === 'otp' && (
-          <p className="rounded-lg bg-[#ffb703]/10 px-3 py-2 text-xs text-[#ffb703]">
+          <p
+            className="rounded-lg px-3 py-2.5 text-xs"
+            style={{ background: 'rgba(168, 117, 44, 0.08)', color: 'var(--gold-deep)' }}
+          >
             SMS isn't wired up yet — your test OTP is <strong>{devOtp}</strong>.
           </p>
         )}
 
-        {error && <p className="text-sm text-[#ff4d6d]">{error}</p>}
+        {error && <p className="text-sm" style={{ color: 'var(--maroon)' }}>{error}</p>}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-xl bg-[#ffb703] py-3 font-semibold text-[#1a0b2e] disabled:opacity-50"
-        >
+        <button type="submit" disabled={loading} className="btn-primary w-full">
           {loading
             ? 'Please wait…'
             : step === 'phone'

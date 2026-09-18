@@ -249,6 +249,7 @@ function ClientRegisterForm() {
                   <Field label="Aadhaar front (upload link)">
                     <input
                       required
+                      type="url"
                       value={form.aadhaarFrontUrl}
                       onChange={(e) => update('aadhaarFrontUrl', e.target.value)}
                       className="field-input"
@@ -258,6 +259,7 @@ function ClientRegisterForm() {
                   <Field label="Aadhaar back (upload link)">
                     <input
                       required
+                      type="url"
                       value={form.aadhaarBackUrl}
                       onChange={(e) => update('aadhaarBackUrl', e.target.value)}
                       className="field-input"
@@ -276,6 +278,7 @@ function ClientRegisterForm() {
                   <Field label="Selfie (upload link)">
                     <input
                       required
+                      type="url"
                       value={form.selfieUrl}
                       onChange={(e) => update('selfieUrl', e.target.value)}
                       className="field-input"

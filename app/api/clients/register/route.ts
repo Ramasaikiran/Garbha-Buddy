@@ -3,6 +3,16 @@ import { db } from '@/lib/db';
 import { randomInt } from 'crypto';
 import { TIER_AMOUNTS } from '@/lib/razorpay';
 
+function isValidUrl(value: unknown): value is string {
+  if (typeof value !== 'string') return false;
+  try {
+    const u = new URL(value.trim());
+    return u.protocol === 'http:' || u.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const {
@@ -19,8 +29,25 @@ export async function POST(request: Request) {
       selfieUrl,
     } = await request.json();
 
-    if (!name || !gender || !email || !phoneNumber || !aadhaarFrontUrl || !aadhaarBackUrl || !selfieUrl) {
+    if (!name || !gender || !email || !phoneNumber) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    const linkFields: Record<string, unknown> = {
+      'Aadhaar front': aadhaarFrontUrl,
+      'Aadhaar back': aadhaarBackUrl,
+      Selfie: selfieUrl,
+    };
+    for (const [label, value] of Object.entries(linkFields)) {
+      if (!value) {
+        return NextResponse.json({ error: `${label} is required` }, { status: 400 });
+      }
+      if (!isValidUrl(value)) {
+        return NextResponse.json(
+          { error: `${label} must be a link starting with http:// or https:// — not plain text` },
+          { status: 400 }
+        );
+      }
     }
 
     if (companionId && !ticketLiabilityAccepted) {
@@ -30,6 +57,8 @@ export async function POST(request: Request) {
       );
     }
 
+    // Pre-check for a friendly duplicate message; the transaction's unique
+    // constraint below is the real guarantee against races.
     const existing = await db.query(
       'SELECT id FROM users WHERE phone_number = $1 OR email = $2',
       [phoneNumber, email]
@@ -41,28 +70,20 @@ export async function POST(request: Request) {
       );
     }
 
-    // 1. Create the client user
-    const userResult = await db.query(
-      `INSERT INTO users
-        (name, gender, email, phone_number, role, aadhaar_front_url, aadhaar_back_url, aadhaar_last4, selfie_url)
-       VALUES ($1, $2, $3, $4, 'client', $5, $6, $7, $8)
-       RETURNING id`,
-      [name, gender, email, phoneNumber, aadhaarFrontUrl, aadhaarBackUrl, aadhaarLast4 || null, selfieUrl]
-    );
-    const clientId = userResult.rows[0].id;
-
-    // 2. If they arrived via a shareable link, start a pending booking
-    let booking = null;
+    // Validate the companion BEFORE creating any user row, so a rejected
+    // booking never leaves an orphan account behind.
+    let companionRow: { preference: string; tier: string } | null = null;
     if (companionId) {
-      const companionRow = await db.query(
+      const result = await db.query(
         'SELECT preference, tier FROM companions_meta WHERE id = $1',
         [companionId]
       );
-      if (!companionRow.rows[0]) {
+      if (!result.rows[0]) {
         return NextResponse.json({ error: 'Companion not found' }, { status: 404 });
       }
+      companionRow = result.rows[0];
       if (
-        companionRow.rows[0].preference === 'girls_only' &&
+        companionRow!.preference === 'girls_only' &&
         gender.toLowerCase() !== 'female'
       ) {
         return NextResponse.json(
@@ -70,21 +91,57 @@ export async function POST(request: Request) {
           { status: 400 }
         );
       }
-
-      const amount = TIER_AMOUNTS[companionRow.rows[0].tier] ?? TIER_AMOUNTS.gold;
-      const otp = String(randomInt(100000, 999999));
-      const bookingResult = await db.query(
-        `INSERT INTO bookings
-          (client_id, companion_id, amount_paid, otp_code, booking_date, ticket_liability_accepted)
-         VALUES ($1, $2, $3, $4, $5, $6)
-         RETURNING id`,
-        [clientId, companionId, amount, otp, bookingDate || new Date(), true]
-      );
-      booking = { id: bookingResult.rows[0].id, amount };
     }
 
-    return NextResponse.json({ success: true, clientId, booking });
+    const client = await db.connect();
+    try {
+      await client.query('BEGIN');
+
+      const userResult = await client.query(
+        `INSERT INTO users
+          (name, gender, email, phone_number, role, aadhaar_front_url, aadhaar_back_url, aadhaar_last4, selfie_url)
+         VALUES ($1, $2, $3, $4, 'client', $5, $6, $7, $8)
+         RETURNING id`,
+        [name, gender, email, phoneNumber, aadhaarFrontUrl, aadhaarBackUrl, aadhaarLast4 || null, selfieUrl]
+      );
+      const clientId = userResult.rows[0].id;
+
+      let booking = null;
+      if (companionId && companionRow) {
+        const amount = TIER_AMOUNTS[companionRow.tier] ?? TIER_AMOUNTS.gold;
+        const otp = String(randomInt(100000, 999999));
+        const bookingResult = await client.query(
+          `INSERT INTO bookings
+            (client_id, companion_id, amount_paid, otp_code, booking_date, ticket_liability_accepted)
+           VALUES ($1, $2, $3, $4, $5, $6)
+           RETURNING id`,
+          [clientId, companionId, amount, otp, bookingDate || new Date(), true]
+        );
+        booking = { id: bookingResult.rows[0].id, amount };
+      }
+
+      await client.query('COMMIT');
+      return NextResponse.json({ success: true, clientId, booking });
+    } catch (err: any) {
+      await client.query('ROLLBACK');
+
+      if (err.code === '23505') {
+        return NextResponse.json(
+          { error: 'An account with this phone number or email already exists. Try logging in instead.' },
+          { status: 409 }
+        );
+      }
+
+      console.error('client registration failed', err);
+      return NextResponse.json(
+        { error: 'Registration failed. Please check your details and try again.' },
+        { status: 500 }
+      );
+    } finally {
+      client.release();
+    }
   } catch (err) {
-    return NextResponse.json({ error: 'Registration failed' }, { status: 500 });
+    console.error('client registration request error', err);
+    return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
   }
 }

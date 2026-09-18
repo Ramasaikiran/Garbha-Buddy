@@ -22,7 +22,7 @@ export default function CompanionRegisterPage() {
     tier: 'gold',
     videoProofUrl: '',
     preference: 'everyone',
-    availabilityDates: '',
+    availabilityDates: [''] as string[],
     aadhaarFrontUrl: '',
     aadhaarBackUrl: '',
     aadhaarLast4: '',
@@ -35,6 +35,25 @@ export default function CompanionRegisterPage() {
 
   function update(field: string, value: string) {
     setForm((f) => ({ ...f, [field]: value }));
+  }
+
+  function updateDate(index: number, value: string) {
+    setForm((f) => {
+      const dates = [...f.availabilityDates];
+      dates[index] = value;
+      return { ...f, availabilityDates: dates };
+    });
+  }
+
+  function addDateSlot() {
+    setForm((f) => ({ ...f, availabilityDates: [...f.availabilityDates, ''] }));
+  }
+
+  function removeDateSlot(index: number) {
+    setForm((f) => ({
+      ...f,
+      availabilityDates: f.availabilityDates.filter((_, i) => i !== index),
+    }));
   }
 
   function stepValid(s: number) {
@@ -72,10 +91,7 @@ export default function CompanionRegisterPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...form,
-          availabilityDates: form.availabilityDates
-            .split(',')
-            .map((d) => d.trim())
-            .filter(Boolean),
+          availabilityDates: form.availabilityDates.filter(Boolean),
         }),
       });
       const data = await res.json();
@@ -250,14 +266,39 @@ export default function CompanionRegisterPage() {
                       placeholder="Drive/Instagram link showing you dance"
                     />
                   </Field>
-                  <Field label="Available dates (comma-separated)">
-                    <input
-                      value={form.availabilityDates}
-                      onChange={(e) => update('availabilityDates', e.target.value)}
-                      className="field-input"
-                      placeholder="2026-10-12, 2026-10-13"
-                    />
-                  </Field>
+                  <div>
+                    <span className="field-label">Available dates</span>
+                    <div className="space-y-2">
+                      {form.availabilityDates.map((date, i) => (
+                        <div key={i} className="flex gap-2">
+                          <input
+                            type="date"
+                            value={date}
+                            onChange={(e) => updateDate(i, e.target.value)}
+                            className="field-input flex-1"
+                          />
+                          {form.availabilityDates.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => removeDateSlot(i)}
+                              className="btn-secondary !px-3"
+                              aria-label="Remove date"
+                            >
+                              ✕
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={addDateSlot}
+                      className="mt-2 text-xs font-medium underline"
+                      style={{ color: 'var(--gold-deep)' }}
+                    >
+                      + Add another date
+                    </button>
+                  </div>
                 </>
               )}
 

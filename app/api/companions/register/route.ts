@@ -34,6 +34,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
+    const dates = Array.isArray(availabilityDates) ? availabilityDates : [];
+    const dateFormat = /^\d{4}-\d{2}-\d{2}$/;
+    for (const d of dates) {
+      if (typeof d !== 'string' || !dateFormat.test(d) || Number.isNaN(Date.parse(d))) {
+        return NextResponse.json(
+          { error: 'Available dates must be valid dates in YYYY-MM-DD format' },
+          { status: 400 }
+        );
+      }
+    }
+
     const linkFields: Record<string, unknown> = {
       'Dance proof video': videoProofUrl,
       'Aadhaar front': aadhaarFrontUrl,
@@ -101,7 +112,7 @@ export async function POST(request: Request) {
           tier || 'gold',
           videoProofUrl,
           preference || 'everyone',
-          availabilityDates,
+          dates,
           slug,
         ]
       );

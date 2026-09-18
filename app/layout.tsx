@@ -17,7 +17,7 @@ const manrope = Manrope({
   display: 'swap',
 });
 
-const SITE_URL = 'https://garbabuddy.com';
+const SITE_URL = 'https://garbabuddy.lol';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

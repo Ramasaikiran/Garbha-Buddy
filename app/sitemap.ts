@@ -1,9 +1,18 @@
 import type { MetadataRoute } from 'next';
 
-const SITE_URL = 'https://garbabuddy.com';
+const SITE_URL = 'https://garbabuddy.lol';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const routes = ['', '/browse', '/companion/register', '/login'];
+  const routes = [
+    '',
+    '/browse',
+    '/companion/register',
+    '/login',
+    '/contact',
+    '/terms',
+    '/privacy',
+    '/refund-policy',
+  ];
   return routes.map((path) => ({
     url: `${SITE_URL}${path}`,
     lastModified: new Date(),

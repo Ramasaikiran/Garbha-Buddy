@@ -265,10 +265,14 @@ export default function HomePage() {
               <DiyaMark className="h-4 w-4" />
               <span className="text-sm font-medium">Garba Buddy</span>
             </div>
-            <nav className="flex gap-6 text-xs" style={{ color: 'var(--ink-60)' }}>
+            <nav className="flex flex-wrap gap-6 text-xs" style={{ color: 'var(--ink-60)' }}>
               <Link href="/browse">Browse</Link>
               <Link href="/companion/register">Become a companion</Link>
               <Link href="/login">Log in</Link>
+              <Link href="/contact">Contact</Link>
+              <Link href="/terms">Terms</Link>
+              <Link href="/privacy">Privacy</Link>
+              <Link href="/refund-policy">Refunds</Link>
             </nav>
             <p className="text-xs" style={{ color: 'var(--ink-40)' }}>
               © {new Date().getFullYear()}

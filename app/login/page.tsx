@@ -4,56 +4,85 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
-  const [email, setPhoneNumber] = useState('');
+  const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
-  const [step, setStep] = useState<'phone' | 'otp'>('phone');
+  const [step, setStep] = useState<'email' | 'otp'>('email');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [devOtp, setDevOtp] = useState<string | null>(null);
   const router = useRouter();
 
   async function requestOtp(e: React.FormEvent) {
     e.preventDefault();
     setError('');
-    const res = await fetch('/api/auth/request-otp', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
-    });
-    const data = await res.json();
-    if (!res.ok) return setError(data.error);
-    setStep('otp');
+    setLoading(true);
+    try {
+      const res = await fetch('/api/auth/request-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'Could not send OTP');
+        return;
+      }
+      setDevOtp(data.devOtp || null);
+      setStep('otp');
+    } catch {
+      setError('Network error — check your connection and try again.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function verifyOtp(e: React.FormEvent) {
     e.preventDefault();
     setError('');
-    const res = await fetch('/api/auth/verify-otp', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, otp }),
-    });
-    const data = await res.json();
-    if (!res.ok) return setError(data.error);
-    router.push('/dashboard');
+    setLoading(true);
+    try {
+      const res = await fetch('/api/auth/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'Could not verify OTP');
+        return;
+      }
+      router.push('/dashboard');
+    } catch {
+      setError('Network error — check your connection and try again.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#1a0b2e] px-4 text-white">
+    <main
+      className="flex min-h-screen items-center justify-center px-6"
+      style={{ background: 'var(--paper)' }}
+    >
       <form
-        onSubmit={step === 'phone' ? requestOtp : verifyOtp}
-        className="w-full max-w-sm space-y-4 rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur"
+        onSubmit={step === 'email' ? requestOtp : verifyOtp}
+        className="card w-full max-w-sm space-y-5 p-8"
       >
-        <p className="text-sm font-semibold tracking-[0.3em] text-[#ffb703]">LOG IN</p>
-        <h1 className="font-serif text-2xl font-bold">
-          {step === 'phone' ? 'Enter your email' : 'Enter the OTP'}
+        <p className="text-xs font-semibold uppercase tracking-[0.28em]" style={{ color: 'var(--gold)' }}>
+          Log in
+        </p>
+        <h1 className="font-display text-2xl font-medium">
+          {step === 'email' ? 'Enter your email' : 'Enter the OTP'}
         </h1>
 
-        {step === 'phone' ? (
+        {step === 'email' ? (
           <input
             required
+            type="email"
             value={email}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-            type="email" placeholder="you@example.com"
-            className="w-full rounded-xl border border-white/15 bg-black/30 px-3 py-2"
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            className="field-input"
           />
         ) : (
           <input
@@ -61,14 +90,27 @@ export default function LoginPage() {
             value={otp}
             onChange={(e) => setOtp(e.target.value)}
             placeholder="6-digit code"
-            className="w-full rounded-xl border border-white/15 bg-black/30 px-3 py-2"
+            className="field-input"
           />
         )}
 
-        {error && <p className="text-sm text-[#ff4d6d]">{error}</p>}
+        {devOtp && step === 'otp' && (
+          <p
+            className="rounded-lg px-3 py-2.5 text-xs"
+            style={{ background: 'rgba(168, 117, 44, 0.08)', color: 'var(--gold-deep)' }}
+          >
+            Email isn't wired up yet — your test OTP is <strong>{devOtp}</strong>.
+          </p>
+        )}
 
-        <button className="w-full rounded-xl bg-[#ffb703] py-3 font-semibold text-[#1a0b2e]">
-          {step === 'phone' ? 'Send OTP' : 'Verify & log in'}
+        {error && <p className="text-sm" style={{ color: 'var(--maroon)' }}>{error}</p>}
+
+        <button type="submit" disabled={loading} className="btn-primary w-full">
+          {loading
+            ? 'Please wait…'
+            : step === 'email'
+            ? 'Send OTP'
+            : 'Verify & log in'}
         </button>
       </form>
     </main>

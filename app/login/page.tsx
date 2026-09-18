@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [email, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [step, setStep] = useState<'phone' | 'otp'>('phone');
   const [error, setError] = useState('');
@@ -16,7 +16,7 @@ export default function LoginPage() {
     const res = await fetch('/api/auth/request-otp', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phoneNumber }),
+      body: JSON.stringify({ email }),
     });
     const data = await res.json();
     if (!res.ok) return setError(data.error);
@@ -29,7 +29,7 @@ export default function LoginPage() {
     const res = await fetch('/api/auth/verify-otp', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phoneNumber, otp }),
+      body: JSON.stringify({ email, otp }),
     });
     const data = await res.json();
     if (!res.ok) return setError(data.error);
@@ -44,15 +44,15 @@ export default function LoginPage() {
       >
         <p className="text-sm font-semibold tracking-[0.3em] text-[#ffb703]">LOG IN</p>
         <h1 className="font-serif text-2xl font-bold">
-          {step === 'phone' ? 'Enter your phone' : 'Enter the OTP'}
+          {step === 'phone' ? 'Enter your email' : 'Enter the OTP'}
         </h1>
 
         {step === 'phone' ? (
           <input
             required
-            value={phoneNumber}
+            value={email}
             onChange={(e) => setPhoneNumber(e.target.value)}
-            placeholder="98765 43210"
+            type="email" placeholder="you@example.com"
             className="w-full rounded-xl border border-white/15 bg-black/30 px-3 py-2"
           />
         ) : (

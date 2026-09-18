@@ -3,26 +3,26 @@ import { db } from '@/lib/db';
 import { SignJWT } from 'jose';
 
 export async function POST(request: Request) {
-  const { phoneNumber, otp } = await request.json();
-  if (!phoneNumber || !otp) {
-    return NextResponse.json({ error: 'phoneNumber and otp required' }, { status: 400 });
+  const { email, otp } = await request.json();
+  if (!email || !otp) {
+    return NextResponse.json({ error: 'email and otp required' }, { status: 400 });
   }
 
   const record = await db.query(
-    `SELECT id FROM login_otps
-     WHERE phone_number = $1 AND otp_code = $2 AND consumed = FALSE AND expires_at > NOW()
+    `SELECT id FROM login_email_otps
+     WHERE email = $1 AND otp_code = $2 AND consumed = FALSE AND expires_at > NOW()
      ORDER BY created_at DESC LIMIT 1`,
-    [phoneNumber, otp]
+    [email, otp]
   );
   if (!record.rows[0]) {
     return NextResponse.json({ error: 'Invalid or expired OTP' }, { status: 400 });
   }
 
-  await db.query('UPDATE login_otps SET consumed = TRUE WHERE id = $1', [record.rows[0].id]);
+  await db.query('UPDATE login_email_otps SET consumed = TRUE WHERE id = $1', [record.rows[0].id]);
 
   const user = await db.query(
-    'SELECT id, name, role FROM users WHERE phone_number = $1',
-    [phoneNumber]
+    'SELECT id, name, role FROM users WHERE email = $1',
+    [email]
   );
   const u = user.rows[0];
 

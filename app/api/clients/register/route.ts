@@ -8,6 +8,7 @@ export async function POST(request: Request) {
     const {
       name,
       gender,
+      email,
       phoneNumber,
       companionId,
       bookingDate,
@@ -18,7 +19,7 @@ export async function POST(request: Request) {
       selfieUrl,
     } = await request.json();
 
-    if (!name || !gender || !phoneNumber || !aadhaarFrontUrl || !aadhaarBackUrl || !selfieUrl) {
+    if (!name || !gender || !email || !phoneNumber || !aadhaarFrontUrl || !aadhaarBackUrl || !selfieUrl) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
@@ -29,13 +30,24 @@ export async function POST(request: Request) {
       );
     }
 
+    const existing = await db.query(
+      'SELECT id FROM users WHERE phone_number = $1 OR email = $2',
+      [phoneNumber, email]
+    );
+    if (existing.rows[0]) {
+      return NextResponse.json(
+        { error: 'An account with this phone number or email already exists' },
+        { status: 409 }
+      );
+    }
+
     // 1. Create the client user
     const userResult = await db.query(
       `INSERT INTO users
-        (name, gender, phone_number, role, aadhaar_front_url, aadhaar_back_url, aadhaar_last4, selfie_url)
-       VALUES ($1, $2, $3, 'client', $4, $5, $6, $7)
+        (name, gender, email, phone_number, role, aadhaar_front_url, aadhaar_back_url, aadhaar_last4, selfie_url)
+       VALUES ($1, $2, $3, $4, 'client', $5, $6, $7, $8)
        RETURNING id`,
-      [name, gender, phoneNumber, aadhaarFrontUrl, aadhaarBackUrl, aadhaarLast4 || null, selfieUrl]
+      [name, gender, email, phoneNumber, aadhaarFrontUrl, aadhaarBackUrl, aadhaarLast4 || null, selfieUrl]
     );
     const clientId = userResult.rows[0].id;
 

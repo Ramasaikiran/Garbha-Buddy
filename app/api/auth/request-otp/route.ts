@@ -1,25 +1,27 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { randomInt } from 'crypto';
+import { sendOtpEmail } from '@/lib/resend';
 
 export async function POST(request: Request) {
-  const { phoneNumber } = await request.json();
-  if (!phoneNumber) {
-    return NextResponse.json({ error: 'phoneNumber required' }, { status: 400 });
+  const { email } = await request.json();
+  if (!email) {
+    return NextResponse.json({ error: 'email required' }, { status: 400 });
   }
 
-  const user = await db.query('SELECT id FROM users WHERE phone_number = $1', [phoneNumber]);
+  const user = await db.query('SELECT id FROM users WHERE email = $1', [email]);
   if (!user.rows[0]) {
-    return NextResponse.json({ error: 'No account with this number' }, { status: 404 });
+    return NextResponse.json({ error: 'No account with this email' }, { status: 404 });
   }
 
   const otp = String(randomInt(100000, 999999));
   await db.query(
-    `INSERT INTO login_otps (phone_number, otp_code, expires_at)
+    `INSERT INTO login_email_otps (email, otp_code, expires_at)
      VALUES ($1, $2, NOW() + INTERVAL '10 minutes')`,
-    [phoneNumber, otp]
+    [email, otp]
   );
 
-  // TODO: wire to SMS provider (e.g. MSG91, Twilio) — send `otp` to phoneNumber
+  await sendOtpEmail(email, otp);
+
   return NextResponse.json({ success: true, message: 'OTP sent' });
 }

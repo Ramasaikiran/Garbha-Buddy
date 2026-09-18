@@ -13,6 +13,7 @@ export default function CompanionRegisterPage() {
   const [form, setForm] = useState({
     name: '',
     gender: '',
+    email: '',
     phoneNumber: '',
     city: CITIES[0],
     tier: 'gold',
@@ -152,6 +153,16 @@ export default function CompanionRegisterPage() {
                   onChange={(e) => update('phoneNumber', e.target.value)}
                   className="input"
                   placeholder="98765 43210"
+                />
+              </Field>
+              <Field label="Email">
+                <input
+                  required
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => update('email', e.target.value)}
+                  className="input"
+                  placeholder="you@example.com"
                 />
               </Field>
             </div>

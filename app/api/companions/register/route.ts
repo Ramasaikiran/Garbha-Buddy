@@ -7,6 +7,7 @@ export async function POST(request: Request) {
     const {
       name,
       gender,
+      email,
       phoneNumber,
       city,
       tier,
@@ -22,6 +23,7 @@ export async function POST(request: Request) {
     if (
       !name ||
       !gender ||
+      !email ||
       !phoneNumber ||
       !city ||
       !videoProofUrl ||
@@ -32,13 +34,24 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
+    const existingUser = await db.query(
+      'SELECT id FROM users WHERE phone_number = $1 OR email = $2',
+      [phoneNumber, email]
+    );
+    if (existingUser.rows[0]) {
+      return NextResponse.json(
+        { error: 'An account with this phone number or email already exists' },
+        { status: 409 }
+      );
+    }
+
     // 1. Create base user row with identity documents
     const userResult = await db.query(
       `INSERT INTO users
-        (name, gender, phone_number, role, aadhaar_front_url, aadhaar_back_url, aadhaar_last4, selfie_url)
-       VALUES ($1, $2, $3, 'companion', $4, $5, $6, $7)
+        (name, gender, email, phone_number, role, aadhaar_front_url, aadhaar_back_url, aadhaar_last4, selfie_url)
+       VALUES ($1, $2, $3, $4, 'companion', $5, $6, $7, $8)
        RETURNING id`,
-      [name, gender, phoneNumber, aadhaarFrontUrl, aadhaarBackUrl, aadhaarLast4 || null, selfieUrl]
+      [name, gender, email, phoneNumber, aadhaarFrontUrl, aadhaarBackUrl, aadhaarLast4 || null, selfieUrl]
     );
     const companionId = userResult.rows[0].id;
 

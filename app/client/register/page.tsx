@@ -19,6 +19,7 @@ function ClientRegisterForm() {
   const [form, setForm] = useState({
     name: '',
     gender: '',
+    email: '',
     phoneNumber: '',
     aadhaarFrontUrl: '',
     aadhaarBackUrl: '',
@@ -177,6 +178,16 @@ function ClientRegisterForm() {
               onChange={(e) => update('phoneNumber', e.target.value)}
               className="input"
               placeholder="98765 43210"
+            />
+          </Field>
+          <Field label="Email">
+            <input
+              required
+              type="email"
+              value={form.email}
+              onChange={(e) => update('email', e.target.value)}
+              className="input"
+              placeholder="you@example.com"
             />
           </Field>
 

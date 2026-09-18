@@ -77,7 +77,7 @@ export default function HomePage() {
   };
 
   return (
-    <main style={{ background: 'var(--paper)' }}>
+    <main style={{ background: 'var(--paper)' }} className="pb-20 sm:pb-0">
       <Script
         id="faq-jsonld"
         type="application/ld+json"
@@ -85,23 +85,39 @@ export default function HomePage() {
       />
 
       {/* NAV */}
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
+      <header
+        className="sticky top-0 z-20 mx-auto flex max-w-6xl items-center justify-between px-6 py-5"
+        style={{ background: 'rgba(250, 247, 241, 0.85)', backdropFilter: 'blur(8px)' }}
+      >
         <div className="flex items-center gap-2.5">
           <DiyaMark className="h-6 w-6" />
           <span className="font-display text-lg font-semibold">Garba Buddy</span>
         </div>
-        <nav className="hidden items-center gap-8 text-sm sm:flex" style={{ color: 'var(--ink-60)' }}>
-          <Link href="/browse" className="hover:text-current" style={{ color: 'var(--ink)' }}>
-            Browse
-          </Link>
+        <nav className="hidden items-center gap-7 text-sm sm:flex" style={{ color: 'var(--ink-60)' }}>
           <Link href="/companion/register" style={{ color: 'var(--ink)' }}>
             Become a companion
           </Link>
           <Link href="/login" style={{ color: 'var(--ink)' }}>
             Log in
           </Link>
+          <Link href="/browse" className="btn-primary !px-5 !py-2.5 !text-sm">
+            Find a companion
+          </Link>
         </nav>
+        <Link href="/browse" className="btn-primary !px-4 !py-2 !text-sm sm:hidden">
+          Book
+        </Link>
       </header>
+
+      {/* Mobile sticky bottom CTA — appears once past the hero */}
+      <div
+        className="fixed inset-x-0 bottom-0 z-20 border-t p-3 sm:hidden"
+        style={{ background: 'var(--surface)', borderColor: 'var(--line)' }}
+      >
+        <Link href="/browse" className="btn-primary block w-full text-center">
+          Find a companion
+        </Link>
+      </div>
 
       {/* HERO */}
       <section className="mx-auto max-w-3xl px-6 pb-28 pt-16 text-center sm:pt-24">
@@ -152,6 +168,24 @@ export default function HomePage() {
         </p>
       </section>
 
+      {/* TRUST STRIP — placed immediately after hero, before any scroll-away point */}
+      <section className="border-y" style={{ borderColor: 'var(--line)', background: 'var(--surface)' }}>
+        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-10 gap-y-3 px-6 py-6 text-center text-xs font-medium" style={{ color: 'var(--ink-60)' }}>
+          <span className="flex items-center gap-1.5">
+            <ShieldIcon className="h-3.5 w-3.5" style={{ color: 'var(--gold)' }} />
+            ID-verified companions
+          </span>
+          <span className="flex items-center gap-1.5">
+            <MatchIcon className="h-3.5 w-3.5" style={{ color: 'var(--gold)' }} />
+            Face-matched at the gate
+          </span>
+          <span className="flex items-center gap-1.5">
+            <LockIcon className="h-3.5 w-3.5" style={{ color: 'var(--gold)' }} />
+            Payments held in escrow
+          </span>
+        </div>
+      </section>
+
       {/* HOW IT WORKS */}
       <section aria-labelledby="how-it-works" className="border-t" style={{ borderColor: 'var(--line)' }}>
         <div className="mx-auto max-w-6xl px-6 py-24">
@@ -187,9 +221,17 @@ export default function HomePage() {
             {TIERS.map((t, i) => (
               <div
                 key={t.name}
-                className="card p-8"
-                style={i === 2 ? { borderColor: 'var(--gold)' } : undefined}
+                className="card relative p-8"
+                style={i === 1 ? { borderColor: 'var(--gold)' } : undefined}
               >
+                {i === 1 && (
+                  <span
+                    className="absolute -top-3 left-8 rounded-full px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-wide"
+                    style={{ background: 'var(--gold)', color: 'var(--paper)' }}
+                  >
+                    Most popular
+                  </span>
+                )}
                 <p className="font-display text-base font-medium" style={{ color: 'var(--gold)' }}>
                   {t.name}
                 </p>

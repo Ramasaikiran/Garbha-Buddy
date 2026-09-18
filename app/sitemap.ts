@@ -8,6 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/browse',
     '/companion/register',
     '/login',
+    '/about',
     '/contact',
     '/terms',
     '/privacy',

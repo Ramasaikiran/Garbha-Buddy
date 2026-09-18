@@ -269,6 +269,7 @@ export default function HomePage() {
               <Link href="/browse">Browse</Link>
               <Link href="/companion/register">Become a companion</Link>
               <Link href="/login">Log in</Link>
+              <Link href="/about">About</Link>
               <Link href="/contact">Contact</Link>
               <Link href="/terms">Terms</Link>
               <Link href="/privacy">Privacy</Link>

@@ -57,7 +57,7 @@ export default function CompanionRegisterPage() {
   }
 
   function stepValid(s: number) {
-    if (s === 0) return form.name && form.gender && form.phoneNumber && form.email;
+    if (s === 0) return form.name && form.gender && form.phoneNumber.length === 10 && form.email;
     if (s === 1) return form.videoProofUrl;
     if (s === 2) return form.aadhaarFrontUrl && form.aadhaarBackUrl && form.selfieUrl;
     return true;
@@ -196,11 +196,21 @@ export default function CompanionRegisterPage() {
                     <Field label="Phone number">
                       <input
                         required
+                        type="tel"
+                        inputMode="numeric"
+                        maxLength={10}
                         value={form.phoneNumber}
-                        onChange={(e) => update('phoneNumber', e.target.value)}
+                        onChange={(e) =>
+                          update('phoneNumber', e.target.value.replace(/\D/g, '').slice(0, 10))
+                        }
                         className="field-input"
-                        placeholder="98765 43210"
+                        placeholder="9876543210"
                       />
+                      {form.phoneNumber.length > 0 && form.phoneNumber.length < 10 && (
+                        <p className="mt-1 text-xs" style={{ color: 'var(--ink-40)' }}>
+                          Enter all 10 digits
+                        </p>
+                      )}
                     </Field>
                   </div>
                   <Field label="Email">

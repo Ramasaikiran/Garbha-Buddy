@@ -41,6 +41,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
+    if (!/^\d{10}$/.test(String(phoneNumber))) {
+      return NextResponse.json(
+        { error: 'Phone number must be exactly 10 digits, numbers only' },
+        { status: 400 }
+      );
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email))) {
+      return NextResponse.json({ error: 'Enter a valid email address' }, { status: 400 });
+    }
+
     const linkFields: Record<string, unknown> = {
       'Aadhaar front': aadhaarFrontUrl,
       'Aadhaar back': aadhaarBackUrl,

@@ -12,6 +12,13 @@ function isValidUrl(value: unknown): value is string {
   }
 }
 
+function getBaseUrl(request: Request): string {
+  if (process.env.NEXT_PUBLIC_BASE_URL) return process.env.NEXT_PUBLIC_BASE_URL;
+  const host = request.headers.get('host');
+  const proto = request.headers.get('x-forwarded-proto') || 'https';
+  return host ? `${proto}://${host}` : '';
+}
+
 export async function POST(request: Request) {
   let body: any;
   try {
@@ -40,6 +47,17 @@ export async function POST(request: Request) {
 
     if (!name || !gender || !email || !phoneNumber || !city) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    if (!/^\d{10}$/.test(String(phoneNumber))) {
+      return NextResponse.json(
+        { error: 'Phone number must be exactly 10 digits, numbers only' },
+        { status: 400 }
+      );
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email))) {
+      return NextResponse.json({ error: 'Enter a valid email address' }, { status: 400 });
     }
 
     const dates = Array.isArray(availabilityDates) ? availabilityDates : [];
@@ -127,7 +145,7 @@ export async function POST(request: Request) {
 
       await client.query('COMMIT');
 
-      const shareableLink = `${process.env.NEXT_PUBLIC_BASE_URL || ''}/book/${slug}`;
+      const shareableLink = `${getBaseUrl(request)}/book/${slug}`;
 
       return NextResponse.json({
         success: true,

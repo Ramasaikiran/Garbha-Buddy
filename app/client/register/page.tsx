@@ -58,7 +58,7 @@ function ClientRegisterForm() {
   }
 
   function stepOneValid() {
-    return form.name && form.gender && form.phoneNumber && form.email && !genderBlocked;
+    return form.name && form.gender && form.phoneNumber.length === 10 && form.email && !genderBlocked;
   }
 
   function next() {
@@ -219,11 +219,21 @@ function ClientRegisterForm() {
               <Field label="Phone number">
                 <input
                   required
+                  type="tel"
+                  inputMode="numeric"
+                  maxLength={10}
                   value={form.phoneNumber}
-                  onChange={(e) => update('phoneNumber', e.target.value)}
+                  onChange={(e) =>
+                    update('phoneNumber', e.target.value.replace(/\D/g, '').slice(0, 10))
+                  }
                   className="field-input"
-                  placeholder="98765 43210"
+                  placeholder="9876543210"
                 />
+                {form.phoneNumber.length > 0 && form.phoneNumber.length < 10 && (
+                  <p className="mt-1 text-xs" style={{ color: 'var(--ink-40)' }}>
+                    Enter all 10 digits
+                  </p>
+                )}
               </Field>
 
               <Field label="Email">

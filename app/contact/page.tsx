@@ -11,8 +11,8 @@ export default function ContactPage() {
         </p>
         <h1 className="font-display mt-3 text-4xl font-medium">Contact us</h1>
         <p className="mt-3 text-sm leading-relaxed" style={{ color: 'var(--ink-60)' }}>
-          For bookings, refunds, safety concerns, or anything else — call or
-          WhatsApp us directly.
+          For bookings, refunds, safety concerns, or anything else — call,
+          WhatsApp, or email us directly.
         </p>
 
         <div className="card mt-8 p-6">
@@ -23,6 +23,17 @@ export default function ContactPage() {
             style={{ color: 'var(--gold-deep)' }}
           >
             +91 63037 28397
+          </a>
+        </div>
+
+        <div className="card mt-4 p-6">
+          <p className="field-label">Email</p>
+          <a
+            href="mailto:contact@garbabuddy.lol"
+            className="font-display block text-2xl font-medium"
+            style={{ color: 'var(--gold-deep)' }}
+          >
+            contact@garbabuddy.lol
           </a>
         </div>
 

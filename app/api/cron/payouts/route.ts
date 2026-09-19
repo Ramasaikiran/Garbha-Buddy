@@ -3,9 +3,17 @@ import { db } from '@/lib/db';
 
 const COMPANION_SHARE = 0.7;
 
-// Trigger via Vercel Cron / external scheduler, nightly.
-// Auth: expects `Authorization: Bearer ${CRON_SECRET}`.
+// Trigger via Vercel Cron (GET, auth header auto-added by Vercel using
+// CRON_SECRET) or manually via POST with the same Bearer header.
+export async function GET(request: Request) {
+  return handlePayouts(request);
+}
+
 export async function POST(request: Request) {
+  return handlePayouts(request);
+}
+
+async function handlePayouts(request: Request) {
   const auth = request.headers.get('authorization');
   if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

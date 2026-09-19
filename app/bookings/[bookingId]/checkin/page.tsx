@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { AlertIcon, CheckIcon } from '@/components/icons';
 
 export default function CheckinPage({ params }: { params: { bookingId: string } }) {
@@ -9,11 +10,23 @@ export default function CheckinPage({ params }: { params: { bookingId: string } 
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
   const [rejectMessage, setRejectMessage] = useState('');
+  const [loadError, setLoadError] = useState('');
 
   useEffect(() => {
     fetch(`/api/bookings/${params.bookingId}`)
-      .then((r) => r.json())
-      .then((data) => setBooking(data.booking));
+      .then(async (r) => {
+        const data = await r.json();
+        if (!r.ok) {
+          setLoadError(
+            r.status === 401
+              ? 'Please log in to check in for this booking.'
+              : data.error || 'Could not load this booking.'
+          );
+          return;
+        }
+        setBooking(data.booking);
+      })
+      .catch(() => setLoadError('Network error — try again.'));
   }, [params.bookingId]);
 
   async function confirmMatch() {
@@ -44,6 +57,22 @@ export default function CheckinPage({ params }: { params: { bookingId: string } 
     const data = await res.json();
     if (!res.ok) return setError(data.error);
     setStep('done');
+  }
+
+  if (loadError) {
+    return (
+      <main
+        className="flex min-h-screen items-center justify-center px-6 text-center"
+        style={{ background: 'var(--paper)' }}
+      >
+        <p style={{ color: 'var(--ink-60)' }}>
+          {loadError}{' '}
+          <Link href="/login" className="underline" style={{ color: 'var(--gold-deep)' }}>
+            Log in
+          </Link>
+        </p>
+      </main>
+    );
   }
 
   if (!booking) {

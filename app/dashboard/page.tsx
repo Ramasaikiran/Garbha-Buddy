@@ -12,8 +12,9 @@ const STATUS_COLOR: Record<string, string> = {
 
 const PAYOUT_LABEL: Record<string, string> = {
   pending: 'Payout pending',
-  processing: 'Payout processing',
-  paid: 'Payout received',
+  escrow: 'Held in escrow',
+  paid_out: 'Payout received',
+  refunded: 'Refunded to client',
   failed: 'Payout failed',
 };
 

@@ -26,8 +26,10 @@ export async function GET(request: Request) {
        COUNT(*) FILTER (WHERE status = 'active')::int AS active_count,
        COUNT(*) FILTER (WHERE status = 'completed')::int AS completed_count,
        COUNT(*) FILTER (WHERE status = 'cancelled')::int AS cancelled_count,
-       COUNT(*) FILTER (WHERE payout_status = 'pending' OR payout_status IS NULL)::int AS payout_pending_count,
-       COUNT(*) FILTER (WHERE payout_status = 'paid')::int AS payout_paid_count
+       COUNT(*) FILTER (WHERE payout_status = 'pending')::int AS payout_pending_count,
+       COUNT(*) FILTER (WHERE payout_status = 'escrow')::int AS payout_escrow_count,
+       COUNT(*) FILTER (WHERE payout_status = 'paid_out')::int AS payout_paid_count,
+       COUNT(*) FILTER (WHERE payout_status = 'refunded')::int AS payout_refunded_count
      FROM bookings`
   );
 

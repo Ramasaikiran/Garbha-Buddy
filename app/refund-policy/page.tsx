@@ -39,9 +39,9 @@ export default function RefundPolicyPage() {
               </li>
               <li>
                 <strong style={{ color: 'var(--ink)' }}>Companion no-show.</strong> If your
-                companion doesn't arrive within a reasonable window of the
-                agreed time and doesn't respond in the in-app chat, contact us
-                for a full refund.
+                companion doesn't arrive and doesn't respond in the in-app chat,
+                report it from your booking — you're refunded the full amount
+                immediately, and the companion is charged a 30% penalty.
               </li>
               <li>
                 <strong style={{ color: 'var(--ink)' }}>Failed or duplicate payment.</strong>{' '}
@@ -51,9 +51,10 @@ export default function RefundPolicyPage() {
               </li>
               <li>
                 <strong style={{ color: 'var(--ink)' }}>Cancellation before check-in.</strong>{' '}
-                If you cancel more than 24 hours before the booked date, you're
-                eligible for a full refund. Cancellations within 24 hours are
-                refunded at our discretion, since the companion has likely
+                You can cancel any paid, upcoming booking from your dashboard.
+                Cancelling more than 24 hours before the booked date refunds
+                80% (20% is kept). Cancelling 24 hours or less before the date
+                refunds 70% (30% is kept), since the companion has likely
                 already reserved that time.
               </li>
             </ul>

@@ -21,9 +21,10 @@ export async function GET() {
   );
 
   let availabilityDates: string[] = [];
+  let slug: string | null = null;
   if (session.role === 'companion') {
     const meta = await db.query(
-      'SELECT availability_dates FROM companions_meta WHERE id = $1',
+      'SELECT availability_dates, slug FROM companions_meta WHERE id = $1',
       [session.userId]
     );
     const raw = meta.rows[0]?.availability_dates;
@@ -36,11 +37,13 @@ export async function GET() {
         .map((d) => d.trim().replace(/^"|"$/g, ''))
         .filter(Boolean);
     }
+    slug = meta.rows[0]?.slug || null;
   }
 
   return NextResponse.json({
     role: session.role,
     bookings: result.rows,
     availabilityDates,
+    slug,
   });
 }

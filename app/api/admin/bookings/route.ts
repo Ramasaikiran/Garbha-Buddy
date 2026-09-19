@@ -10,6 +10,7 @@ export async function GET(request: Request) {
   const bookings = await db.query(
     `SELECT b.id, b.status, b.amount_paid, b.booking_date, b.payout_status,
             b.razorpay_order_id, b.razorpay_payment_id, b.created_at,
+            b.cancellation_reason, b.refund_amount,
             client.name AS client_name, client.phone_number AS client_phone,
             companion.name AS companion_name, companion.phone_number AS companion_phone
      FROM bookings b
@@ -33,5 +34,15 @@ export async function GET(request: Request) {
      FROM bookings`
   );
 
-  return NextResponse.json({ bookings: bookings.rows, stats: stats.rows[0] });
+  const penalties = await db.query(
+    `SELECT
+       COALESCE(SUM(amount) FILTER (WHERE status = 'pending'), 0)::int AS penalties_pending,
+       COALESCE(SUM(amount) FILTER (WHERE status = 'deducted'), 0)::int AS penalties_deducted
+     FROM companion_penalties`
+  );
+
+  return NextResponse.json({
+    bookings: bookings.rows,
+    stats: { ...stats.rows[0], ...penalties.rows[0] },
+  });
 }

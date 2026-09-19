@@ -22,9 +22,14 @@ export default function DashboardPage() {
   const [bookings, setBookings] = useState<any[]>([]);
   const [role, setRole] = useState<string | null>(null);
   const [availabilityDates, setAvailabilityDates] = useState<string[]>([]);
+  const [slug, setSlug] = useState<string | null>(null);
   const [error, setError] = useState('');
+  const [actionBookingId, setActionBookingId] = useState<string | null>(null);
+  const [actionMessage, setActionMessage] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
 
-  useEffect(() => {
+  function load() {
     fetch('/api/bookings/mine')
       .then((r) => r.json())
       .then((data) => {
@@ -35,8 +40,63 @@ export default function DashboardPage() {
         setBookings(data.bookings || []);
         setRole(data.role || null);
         setAvailabilityDates(data.availabilityDates || []);
+        setSlug(data.slug || null);
       });
+  }
+
+  useEffect(() => {
+    load();
   }, []);
+
+  useEffect(() => {
+    if (slug && typeof window !== 'undefined') {
+      setShareUrl(`${window.location.origin}/book/${slug}`);
+    }
+  }, [slug]);
+
+  async function copyLink() {
+    await navigator.clipboard.writeText(shareUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  function shareToWhatsApp() {
+    const text = encodeURIComponent(`Book me for Garba this Navratri! ${shareUrl}`);
+    window.open(`https://wa.me/?text=${text}`, '_blank');
+  }
+
+  async function cancelBooking(bookingId: string, hoursUntil: number) {
+    const pct = hoursUntil <= 24 ? 70 : 80;
+    if (!confirm(`Cancel this booking? You'll get a ${pct}% refund.`)) return;
+    setActionBookingId(bookingId);
+    setActionMessage(null);
+    try {
+      const res = await fetch(`/api/bookings/${bookingId}/cancel`, { method: 'POST' });
+      const data = await res.json();
+      setActionMessage(data.message || (res.ok ? 'Cancelled.' : 'Could not cancel.'));
+      load();
+    } finally {
+      setActionBookingId(null);
+    }
+  }
+
+  async function reportNoShow(bookingId: string) {
+    if (!confirm("Report that your companion didn't show up? This cancels the booking and refunds you in full.")) return;
+    setActionBookingId(bookingId);
+    setActionMessage(null);
+    try {
+      const res = await fetch(`/api/bookings/${bookingId}/no-show`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      });
+      const data = await res.json();
+      setActionMessage(data.message || (res.ok ? 'Reported.' : 'Could not report.'));
+      load();
+    } finally {
+      setActionBookingId(null);
+    }
+  }
 
   if (error) {
     return (
@@ -69,6 +129,31 @@ export default function DashboardPage() {
           {role === 'companion' ? 'Who booked you' : 'Your bookings'}
         </h1>
 
+        {role === 'companion' && shareUrl && (
+          <div className="card mt-6 p-5">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--gold)' }}>
+              Your profile link
+            </p>
+            <p className="text-sm" style={{ color: 'var(--ink-60)' }}>
+              Share this with friends, family, or on social media — anyone who opens it can book you directly.
+            </p>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <code
+                className="rounded-lg px-3 py-2 text-xs"
+                style={{ background: 'var(--paper)', border: '1px solid var(--line)', color: 'var(--ink-60)' }}
+              >
+                {shareUrl}
+              </code>
+              <button onClick={copyLink} className="btn-secondary !px-3 !py-1.5 !text-xs">
+                {copied ? 'Copied!' : 'Copy'}
+              </button>
+              <button onClick={shareToWhatsApp} className="btn-secondary !px-3 !py-1.5 !text-xs">
+                Share on WhatsApp
+              </button>
+            </div>
+          </div>
+        )}
+
         {role === 'companion' && allDates.length > 0 && (
           <div className="card mt-6 p-5">
             <p className="mb-3 text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--gold)' }}>
@@ -95,62 +180,94 @@ export default function DashboardPage() {
           </div>
         )}
 
+        {actionMessage && (
+          <p
+            className="mt-6 rounded-lg px-4 py-3 text-sm"
+            style={{ background: 'rgba(168, 117, 44, 0.08)', color: 'var(--gold-deep)' }}
+          >
+            {actionMessage}
+          </p>
+        )}
+
         <div className="mt-8 space-y-3">
           {bookings.length === 0 && <p style={{ color: 'var(--ink-40)' }}>No bookings yet.</p>}
-          {bookings.map((b) => (
-            <div key={b.id} className="card p-5">
-              <div className="flex items-center justify-between">
-                <p className="font-medium">
-                  {role === 'companion' ? b.client_name : b.companion_name}
-                </p>
-                <span
-                  className="text-xs font-semibold uppercase tracking-wide"
-                  style={{ color: STATUS_COLOR[b.status] }}
-                >
-                  {b.status}
-                </span>
-              </div>
-              <p className="mt-1 text-sm" style={{ color: 'var(--ink-40)' }}>
-                ₹{b.amount_paid} · {new Date(b.booking_date).toLocaleDateString()}
-              </p>
-              {role === 'companion' && b.client_phone && (
-                <p className="mt-1 text-xs" style={{ color: 'var(--ink-40)' }}>
-                  {b.client_phone}
-                </p>
-              )}
-              {role === 'client' && b.companion_phone && (
-                <p className="mt-1 text-xs" style={{ color: 'var(--ink-40)' }}>
-                  {b.companion_phone}
-                </p>
-              )}
-              {role === 'companion' && b.payout_status && (
-                <p
-                  className="mt-2 inline-block rounded-full px-2.5 py-0.5 text-xs font-medium"
-                  style={{ background: 'var(--paper)', border: '1px solid var(--line)', color: 'var(--ink-60)' }}
-                >
-                  {PAYOUT_LABEL[b.payout_status] || b.payout_status}
-                </p>
-              )}
-              {b.status === 'active' && (
-                <div className="mt-3 flex gap-5">
-                  <Link
-                    href={`/bookings/${b.id}/chat`}
-                    className="text-sm underline"
-                    style={{ color: 'var(--gold-deep)' }}
+          {bookings.map((b) => {
+            const hoursUntil = (new Date(b.booking_date).getTime() - Date.now()) / (1000 * 60 * 60);
+            return (
+              <div key={b.id} className="card p-5">
+                <div className="flex items-center justify-between">
+                  <p className="font-medium">
+                    {role === 'companion' ? b.client_name : b.companion_name}
+                  </p>
+                  <span
+                    className="text-xs font-semibold uppercase tracking-wide"
+                    style={{ color: STATUS_COLOR[b.status] }}
                   >
-                    Coordinate tickets →
-                  </Link>
-                  <Link
-                    href={`/bookings/${b.id}/checkin`}
-                    className="text-sm underline"
-                    style={{ color: 'var(--gold-deep)' }}
-                  >
-                    Check in →
-                  </Link>
+                    {b.status}
+                  </span>
                 </div>
-              )}
-            </div>
-          ))}
+                <p className="mt-1 text-sm" style={{ color: 'var(--ink-40)' }}>
+                  ₹{b.amount_paid} · {new Date(b.booking_date).toLocaleDateString()}
+                </p>
+                {role === 'companion' && b.client_phone && (
+                  <p className="mt-1 text-xs" style={{ color: 'var(--ink-40)' }}>
+                    {b.client_phone}
+                  </p>
+                )}
+                {role === 'client' && b.companion_phone && (
+                  <p className="mt-1 text-xs" style={{ color: 'var(--ink-40)' }}>
+                    {b.companion_phone}
+                  </p>
+                )}
+                {role === 'companion' && b.payout_status && (
+                  <p
+                    className="mt-2 inline-block rounded-full px-2.5 py-0.5 text-xs font-medium"
+                    style={{ background: 'var(--paper)', border: '1px solid var(--line)', color: 'var(--ink-60)' }}
+                  >
+                    {PAYOUT_LABEL[b.payout_status] || b.payout_status}
+                  </p>
+                )}
+                {b.status === 'active' && (
+                  <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
+                    <Link
+                      href={`/bookings/${b.id}/chat`}
+                      className="text-sm underline"
+                      style={{ color: 'var(--gold-deep)' }}
+                    >
+                      Coordinate tickets →
+                    </Link>
+                    <Link
+                      href={`/bookings/${b.id}/checkin`}
+                      className="text-sm underline"
+                      style={{ color: 'var(--gold-deep)' }}
+                    >
+                      Check in →
+                    </Link>
+                    {role === 'client' && (
+                      <>
+                        <button
+                          onClick={() => cancelBooking(b.id, hoursUntil)}
+                          disabled={actionBookingId === b.id}
+                          className="text-sm underline"
+                          style={{ color: 'var(--ink-40)' }}
+                        >
+                          Cancel booking
+                        </button>
+                        <button
+                          onClick={() => reportNoShow(b.id)}
+                          disabled={actionBookingId === b.id}
+                          className="text-sm underline"
+                          style={{ color: 'var(--maroon)' }}
+                        >
+                          Companion didn't show up
+                        </button>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </main>

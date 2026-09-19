@@ -161,6 +161,8 @@ export default function AdminPage() {
                 <Stat label="In escrow" value={stats.payout_escrow_count} />
                 <Stat label="Payouts paid" value={stats.payout_paid_count} />
                 <Stat label="Refunded" value={stats.payout_refunded_count} />
+                <Stat label="Penalties owed" value={`₹${stats.penalties_pending}`} />
+                <Stat label="Penalties deducted" value={`₹${stats.penalties_deducted}`} />
               </div>
             )}
 
@@ -189,6 +191,12 @@ export default function AdminPage() {
                     Payout: {b.payout_status || 'pending'}
                     {b.razorpay_payment_id && ` · ${b.razorpay_payment_id}`}
                   </p>
+                  {b.cancellation_reason && (
+                    <p className="mt-1 text-xs" style={{ color: 'var(--maroon)' }}>
+                      {b.cancellation_reason.replace(/_/g, ' ')}
+                      {b.refund_amount != null && ` · refunded ₹${b.refund_amount}`}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>

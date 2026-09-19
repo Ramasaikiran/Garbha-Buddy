@@ -52,12 +52,15 @@ export async function POST(
      SET status = 'cancelled',
          companion_mismatch_reported = TRUE,
          mismatch_note = $1,
+         cancellation_reason = 'companion_mismatch',
+         refund_amount = $2,
          payout_status = 'refunded'
-     WHERE id = $2`,
+     WHERE id = $3`,
     [
       `${note || 'Client reported a different companion showed up'}${
         refundError ? ` | refund error: ${refundError}` : ''
       }`,
+      refundStatus === 'refunded' ? amount_paid : null,
       params.bookingId,
     ]
   );

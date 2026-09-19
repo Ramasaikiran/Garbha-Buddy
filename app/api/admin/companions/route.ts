@@ -13,7 +13,7 @@ export async function GET(request: Request) {
      FROM companions_meta cm
      JOIN users u ON u.id = cm.id
      WHERE u.is_verified = FALSE
-     ORDER BY cm.updated_at ASC`
+     ORDER BY cm.created_at ASC`
   );
 
   return NextResponse.json({ pending: result.rows });

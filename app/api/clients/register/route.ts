@@ -14,6 +14,14 @@ function isValidUrl(value: unknown): value is string {
 }
 
 export async function POST(request: Request) {
+  let body: any;
+  try {
+    body = await request.json();
+  } catch (err) {
+    console.error('client registration: could not parse request body', err);
+    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+  }
+
   try {
     const {
       name,
@@ -27,7 +35,7 @@ export async function POST(request: Request) {
       aadhaarBackUrl,
       aadhaarLast4,
       selfieUrl,
-    } = await request.json();
+    } = body;
 
     if (!name || !gender || !email || !phoneNumber) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -141,7 +149,10 @@ export async function POST(request: Request) {
       client.release();
     }
   } catch (err) {
-    console.error('client registration request error', err);
-    return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+    console.error('client registration failed unexpectedly', err);
+    return NextResponse.json(
+      { error: 'Something went wrong on our end. Please try again in a moment.' },
+      { status: 500 }
+    );
   }
 }

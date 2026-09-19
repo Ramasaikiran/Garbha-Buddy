@@ -7,8 +7,8 @@ function secretKey() {
   return new TextEncoder().encode(process.env.ADMIN_SESSION_SECRET);
 }
 
-export async function createAdminSession() {
-  const token = await new SignJWT({ role: 'admin' })
+export async function createAdminSession(admin: { id: string; email: string }) {
+  const token = await new SignJWT({ role: 'admin', adminId: admin.id, email: admin.email })
     .setProtectedHeader({ alg: 'HS256' })
     .setExpirationTime('12h')
     .sign(secretKey());

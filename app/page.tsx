@@ -7,61 +7,61 @@ const TIERS = [
     name: 'Gold',
     price: '₹999',
     duration: '2 hours',
-    blurb: 'A standard social companion. Profile unlocked in-app, met at the gate.',
+    blurb: 'Standard companion. Simple booking. Gate check-in.',
   },
   {
     name: 'Silver',
     price: '₹1,499',
     duration: '4 hours',
-    blurb: '2+ years of experience. A short call beforehand, a crash course on arrival.',
+    blurb: '2+ years experience. Icebreaker call first. Crash course on arrival.',
   },
   {
     name: 'Diamond',
     price: '₹1,999',
     duration: 'Full night',
-    blurb: 'An expert performer — coordinated outfits, a few captured moments, escorted out.',
+    blurb: 'Expert performer. Coordinated outfits. Escorted out too.',
   },
 ];
 
 const STEPS = [
   {
     n: '01',
-    title: 'Find your companion',
-    body: 'Browse verified profiles by city, or open a link one has shared directly with you.',
+    title: 'Find them',
+    body: 'Browse by city. Or tap a link they shared.',
   },
   {
     n: '02',
-    title: 'Book and pay',
-    body: "Register, confirm eligibility, and pay the companion's fee — never the venue ticket.",
+    title: 'Book & pay',
+    body: "Their fee only. Never the venue ticket.",
   },
   {
     n: '03',
-    title: 'Confirm in person',
-    body: 'Compare the person in front of you to their registered photo before you check in.',
+    title: 'Check the face',
+    body: "Match them to their photo. Say no if it's wrong.",
   },
   {
     n: '04',
     title: 'Dance',
-    body: 'Check in with a one-time code. Everything else is settled — just be there.',
+    body: 'One code. That\u2019s check-in. Done.',
   },
 ];
 
 const FAQS = [
   {
     q: 'Does Garba Buddy sell event tickets?',
-    a: "No. We only handle your companion's booking. Venue entry is arranged separately, directly between you and them.",
+    a: "No. We handle the companion booking. Venue entry — that's between you and them.",
   },
   {
     q: 'How are companions verified?',
-    a: 'Every companion submits ID and a photo, plus a short video, all reviewed by our team before appearing publicly.',
+    a: 'ID checked. Selfie checked. Dance video checked. Our team reviews all three before they go live.',
   },
   {
     q: "What if the person who shows up isn't who I booked?",
-    a: "Compare them to their registered photo before checking in. If it doesn't match, decline on the spot — the booking is cancelled immediately.",
+    a: "Compare them to their photo. Doesn't match? Decline on the spot. Booking's cancelled, refund follows.",
   },
   {
     q: 'Can a companion be booked by women only?',
-    a: "Yes. Some set that preference. If you don't meet it, payment is disabled before you can proceed.",
+    a: "Yes. Some set that rule. Don't meet it? Payment's blocked before you can proceed.",
   },
 ];
 
@@ -109,7 +109,7 @@ export default function HomePage() {
         </Link>
       </header>
 
-      {/* Mobile sticky bottom CTA — appears once past the hero */}
+      {/* Mobile sticky bottom CTA */}
       <div
         className="fixed inset-x-0 bottom-0 z-20 border-t p-3 sm:hidden"
         style={{ background: 'var(--surface)', borderColor: 'var(--line)' }}
@@ -120,43 +120,55 @@ export default function HomePage() {
       </div>
 
       {/* HERO */}
-      <section className="mx-auto max-w-3xl px-6 pb-28 pt-16 text-center sm:pt-24">
+      <section className="mx-auto max-w-2xl px-6 pb-20 pt-16 text-center sm:pt-24">
         <p
           className="reveal text-xs font-semibold uppercase tracking-[0.28em]"
           style={{ color: 'var(--gold)', animationDelay: '0ms' }}
         >
-          This Navratri
+          Navratri 2026
         </p>
 
         <h1
-          className="reveal font-display mt-5 text-5xl font-medium leading-[1.06] sm:text-7xl"
+          className="reveal font-display mt-5 text-5xl font-medium leading-[1.08] sm:text-6xl"
           style={{ animationDelay: '90ms' }}
         >
-          Never garba
+          Everyone has
           <br />
-          <em className="not-italic" style={{ color: 'var(--gold)' }}>
-            alone.
-          </em>
+          a dance partner.
+          <br />
+          <span style={{ color: 'var(--gold)' }}>You don't.</span>
+          <br />
+          Yet.
         </h1>
 
-        <p
-          className="reveal mx-auto mt-7 max-w-lg text-lg leading-relaxed"
+        <div
+          className="reveal mx-auto mt-8 max-w-md space-y-1 text-lg leading-snug"
           style={{ color: 'var(--ink-60)', animationDelay: '170ms' }}
         >
-          Book a verified dance companion for the night. Identity-checked,
-          face-matched at the gate, and paid for safely — nothing more.
-        </p>
+          <p>Book a verified Garba dance companion.</p>
+          <p>ID-checked. Face-matched. Paid safely.</p>
+          <p style={{ color: 'var(--ink)', fontWeight: 600 }}>Show up. Dance. That's it.</p>
+        </div>
 
         <div
-          className="reveal mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row"
+          className="reveal mx-auto mt-10 max-w-sm space-y-3 text-left"
           style={{ animationDelay: '250ms' }}
         >
-          <Link href="/browse" className="btn-primary">
-            Find a companion
-            <ArrowIcon className="ml-2 h-4 w-4" />
+          <Link
+            href="/browse"
+            className="flex items-center justify-between rounded-2xl px-5 py-4 font-semibold transition hover:-translate-y-0.5"
+            style={{ background: 'var(--ink)', color: 'var(--paper)' }}
+          >
+            <span>A) I need a companion</span>
+            <ArrowIcon className="h-4 w-4 shrink-0" />
           </Link>
-          <Link href="/companion/register" className="btn-secondary">
-            Become a companion
+          <Link
+            href="/companion/register"
+            className="flex items-center justify-between rounded-2xl border px-5 py-4 font-semibold transition hover:bg-white/60"
+            style={{ borderColor: 'var(--line-strong)', color: 'var(--ink)' }}
+          >
+            <span>B) I want to be one</span>
+            <ArrowIcon className="h-4 w-4 shrink-0" />
           </Link>
         </div>
 
@@ -164,11 +176,11 @@ export default function HomePage() {
           className="reveal mt-10 text-xs tracking-wide"
           style={{ color: 'var(--ink-40)', animationDelay: '320ms' }}
         >
-          Ahmedabad · Mumbai · Surat · Vadodara · Rajkot · Bengaluru · Hyderabad · Chennai · Noida · Delhi NCR
+          Mumbai · Delhi NCR · Bengaluru · Hyderabad · Ahmedabad · Chennai · Pune · Jaipur · Surat · +40 more cities
         </p>
       </section>
 
-      {/* TRUST STRIP — placed immediately after hero, before any scroll-away point */}
+      {/* TRUST STRIP */}
       <section className="border-y" style={{ borderColor: 'var(--line)', background: 'var(--surface)' }}>
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-10 gap-y-3 px-6 py-6 text-center text-xs font-medium" style={{ color: 'var(--ink-60)' }}>
           <span className="flex items-center gap-1.5">
@@ -183,6 +195,25 @@ export default function HomePage() {
             <LockIcon className="h-3.5 w-3.5" style={{ color: 'var(--gold)' }} />
             Payments held in escrow
           </span>
+        </div>
+      </section>
+
+      {/* THE PROBLEM */}
+      <section className="border-t" style={{ borderColor: 'var(--line)' }}>
+        <div className="mx-auto max-w-2xl px-6 py-24 text-center">
+          <h2 className="font-display text-3xl font-medium leading-tight sm:text-4xl">
+            The Navratri problem
+            <br />
+            nobody talks about.
+          </h2>
+          <div className="mx-auto mt-6 max-w-sm space-y-1 text-base leading-snug" style={{ color: 'var(--ink-60)' }}>
+            <p>You want to dance.</p>
+            <p>Everyone's already paired up.</p>
+            <p>You're by the snacks. Again.</p>
+          </div>
+          <p className="font-display mt-6 text-2xl font-medium" style={{ color: 'var(--gold)' }}>
+            Not this year.
+          </p>
         </div>
       </section>
 
@@ -253,13 +284,15 @@ export default function HomePage() {
       <section aria-labelledby="safety" className="border-t" style={{ borderColor: 'var(--line)' }}>
         <div className="mx-auto max-w-6xl px-6 py-24">
           <h2 id="safety" className="font-display max-w-md text-3xl font-medium sm:text-4xl">
-            Built for safety, not just for fun
+            Built for safety.
+            <br />
+            Not just fun.
           </h2>
           <div className="mt-14 grid gap-10 sm:grid-cols-3">
             {[
-              [ShieldIcon, 'ID-verified', 'Government ID and a photo checked for every companion and attendee before booking.'],
-              [MatchIcon, 'Face-matched', 'Compare your companion to their registered photo at the gate. Decline on mismatch.'],
-              [LockIcon, 'Held in escrow', "Payment is released only once the booking's complete — no upfront risk."],
+              [ShieldIcon, 'ID-verified', 'Aadhaar checked. Selfie checked. Before anyone goes live.'],
+              [MatchIcon, 'Face-matched', "See them. Match them. Or walk away — you're covered."],
+              [LockIcon, 'Held in escrow', 'We hold the money. Until the dance actually happens.'],
             ].map(([Icon, title, body]: any) => (
               <div key={title}>
                 <Icon className="h-6 w-6" style={{ color: 'var(--gold)' }} />
@@ -291,6 +324,39 @@ export default function HomePage() {
                 </p>
               </details>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CLOSING CTA */}
+      <section className="border-t" style={{ borderColor: 'var(--line)' }}>
+        <div className="mx-auto max-w-2xl px-6 py-24 text-center">
+          <h2 className="font-display text-3xl font-medium leading-tight sm:text-4xl">
+            Navratri's coming.
+            <br />
+            Fast.
+          </h2>
+          <p className="mx-auto mt-4 max-w-xs text-base" style={{ color: 'var(--ink-60)' }}>
+            Don't spend it on the sidelines.
+          </p>
+
+          <div className="mx-auto mt-8 max-w-sm space-y-3 text-left">
+            <Link
+              href="/browse"
+              className="flex items-center justify-between rounded-2xl px-5 py-4 font-semibold transition hover:-translate-y-0.5"
+              style={{ background: 'var(--ink)', color: 'var(--paper)' }}
+            >
+              <span>A) Find a companion</span>
+              <ArrowIcon className="h-4 w-4 shrink-0" />
+            </Link>
+            <Link
+              href="/companion/register"
+              className="flex items-center justify-between rounded-2xl border px-5 py-4 font-semibold transition hover:bg-white/60"
+              style={{ borderColor: 'var(--line-strong)', color: 'var(--ink)' }}
+            >
+              <span>B) Become a companion</span>
+              <ArrowIcon className="h-4 w-4 shrink-0" />
+            </Link>
           </div>
         </div>
       </section>

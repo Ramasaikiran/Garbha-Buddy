@@ -19,6 +19,10 @@ const manrope = Manrope({
 
 const SITE_URL = 'https://garbabuddy.lol';
 
+export const viewport = {
+  themeColor: '#150826',
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
@@ -26,18 +30,22 @@ export const metadata: Metadata = {
     template: '%s | Garba Buddy',
   },
   description:
-    'Find a verified, ID-checked Garba and Dandiya dance companion for Navratri. Safe, chaperoned bookings in Ahmedabad, Mumbai, Surat, Vadodara, Rajkot, Bengaluru, Hyderabad, Chennai, Noida and Delhi NCR.',
+    'No Garba partner this Navratri? Book a verified, ID-checked dance companion near you. Safe, chaperoned, face-matched at the gate. 10+ cities across India.',
   keywords: [
     'Garba companion',
     'Garba buddy',
-    'Navratri dance partner',
-    'Dandiya partner booking',
-    'Garba dance companion Ahmedabad',
-    'Garba dance companion Hyderabad',
-    'Garba dance companion Chennai',
-    'Navratri companion app',
+    'Garba dance partner',
+    'Navratri dance partner booking',
+    'Dandiya partner for rent',
+    'hire Garba dance partner',
+    'Garba companion Ahmedabad',
+    'Garba companion Hyderabad',
+    'Garba companion Chennai',
+    'Garba companion Mumbai',
+    'Navratri companion app India',
     'solo Garba attendee',
     'verified dance companion India',
+    'become a Garba companion',
   ],
   authors: [{ name: 'Garba Buddy' }],
   openGraph: {
@@ -48,7 +56,7 @@ export const metadata: Metadata = {
     title: 'Garba Buddy — Never Garba Alone',
     description:
       'Book a verified, ID-checked local dance companion for Navratri. Safe, chaperoned, no awkward solo standing on the sidelines.',
-    images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'Garba Buddy' }],
+    images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'Garba Buddy — book a verified Navratri dance companion' }],
   },
   twitter: {
     card: 'summary_large_image',
@@ -67,16 +75,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     name: 'Garba Buddy',
     serviceType: 'Dance companion booking',
     areaServed: [
-      'Ahmedabad',
-      'Mumbai',
-      'Surat',
-      'Vadodara',
-      'Rajkot',
-      'Bengaluru',
-      'Hyderabad',
-      'Chennai',
-      'Noida',
-      'Delhi NCR',
+      { '@type': 'Country', name: 'India' },
+      'Mumbai', 'Delhi NCR', 'Bengaluru', 'Hyderabad', 'Ahmedabad', 'Chennai',
+      'Kolkata', 'Pune', 'Jaipur', 'Surat', 'Lucknow', 'Noida', 'Gurugram',
+      'Vadodara', 'Rajkot', 'Nagpur', 'Indore', 'Bhopal', 'Coimbatore', 'Kochi',
+      'Chandigarh', 'Guwahati',
     ],
     provider: { '@type': 'Organization', name: 'Garba Buddy', url: SITE_URL },
     offers: [

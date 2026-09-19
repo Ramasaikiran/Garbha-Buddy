@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { CheckIcon } from '@/components/icons';
 
-const CITIES = ['Ahmedabad', 'Mumbai', 'Surat', 'Vadodara', 'Rajkot', 'Bengaluru', 'Delhi NCR'];
+const CITIES = ['Ahmedabad', 'Mumbai', 'Surat', 'Vadodara', 'Rajkot', 'Bengaluru', 'Hyderabad', 'Chennai', 'Noida', 'Delhi NCR'];
 const TIERS = [
   { value: 'gold', label: 'Gold — ₹999 / 2hr' },
   { value: 'silver', label: 'Silver — ₹1,499 / 4hr' },

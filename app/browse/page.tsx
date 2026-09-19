@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import CompanionCard from '@/components/CompanionCard';
 
-const CITIES = ['Ahmedabad', 'Mumbai', 'Surat', 'Vadodara', 'Rajkot', 'Bengaluru', 'Delhi NCR'];
+const CITIES = ['Ahmedabad', 'Mumbai', 'Surat', 'Vadodara', 'Rajkot', 'Bengaluru', 'Hyderabad', 'Chennai', 'Noida', 'Delhi NCR'];
 
 export default function BrowsePage() {
   const [city, setCity] = useState('');

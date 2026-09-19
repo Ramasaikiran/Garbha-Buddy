@@ -164,7 +164,7 @@ export default function HomePage() {
           className="reveal mt-10 text-xs tracking-wide"
           style={{ color: 'var(--ink-40)', animationDelay: '320ms' }}
         >
-          Ahmedabad · Mumbai · Surat · Vadodara · Rajkot · Bengaluru · Delhi NCR
+          Ahmedabad · Mumbai · Surat · Vadodara · Rajkot · Bengaluru · Hyderabad · Chennai · Noida · Delhi NCR
         </p>
       </section>
 

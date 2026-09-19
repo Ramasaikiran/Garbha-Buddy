@@ -35,7 +35,7 @@ export default function AboutPage() {
           </p>
           <p>
             We currently operate across Ahmedabad, Mumbai, Surat, Vadodara,
-            Rajkot, Bengaluru, and Delhi NCR.
+            Rajkot, Bengaluru, Hyderabad, Chennai, Noida, and Delhi NCR.
           </p>
         </div>
 

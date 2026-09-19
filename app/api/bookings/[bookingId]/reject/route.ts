@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { getRazorpay } from '@/lib/razorpay';
 
 export async function POST(
   request: Request,
@@ -7,7 +8,10 @@ export async function POST(
 ) {
   const { note } = await request.json();
 
-  const booking = await db.query('SELECT status FROM bookings WHERE id = $1', [params.bookingId]);
+  const booking = await db.query(
+    'SELECT status, razorpay_payment_id, amount_paid FROM bookings WHERE id = $1',
+    [params.bookingId]
+  );
   if (!booking.rows[0]) {
     return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
   }
@@ -15,13 +19,48 @@ export async function POST(
     return NextResponse.json({ error: 'Booking is not open for check-in' }, { status: 400 });
   }
 
+  const { razorpay_payment_id, amount_paid } = booking.rows[0];
+  let refundStatus: 'refunded' | 'refund_failed' | 'no_payment' = 'no_payment';
+  let refundError: string | null = null;
+
+  if (razorpay_payment_id) {
+    try {
+      await getRazorpay().payments.refund(razorpay_payment_id, {
+        amount: Math.round(amount_paid * 100), // full refund, in paise
+        speed: 'normal',
+        notes: { bookingId: params.bookingId, reason: 'companion_mismatch' },
+      });
+      refundStatus = 'refunded';
+    } catch (err: any) {
+      console.error('refund failed for booking', params.bookingId, err);
+      refundStatus = 'refund_failed';
+      refundError = err?.error?.description || err?.message || 'Unknown refund error';
+    }
+  }
+
   await db.query(
     `UPDATE bookings
-     SET status = 'cancelled', companion_mismatch_reported = TRUE, mismatch_note = $1
+     SET status = 'cancelled',
+         companion_mismatch_reported = TRUE,
+         mismatch_note = $1,
+         payout_status = 'refunded'
      WHERE id = $2`,
-    [note || 'Client reported a different companion showed up', params.bookingId]
+    [
+      `${note || 'Client reported a different companion showed up'}${
+        refundError ? ` | refund error: ${refundError}` : ''
+      }`,
+      params.bookingId,
+    ]
   );
 
-  // No payout fires for cancelled bookings — refund handling goes here (Razorpay refund API).
-  return NextResponse.json({ success: true, message: 'Reported. Booking cancelled.' });
+  return NextResponse.json({
+    success: true,
+    message:
+      refundStatus === 'refunded'
+        ? 'Reported. Booking cancelled and refund issued.'
+        : refundStatus === 'refund_failed'
+        ? 'Reported. Booking cancelled — refund could not be processed automatically, our team will follow up.'
+        : 'Reported. Booking cancelled.',
+    refundStatus,
+  });
 }

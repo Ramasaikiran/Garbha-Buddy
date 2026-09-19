@@ -8,6 +8,7 @@ export default function CheckinPage({ params }: { params: { bookingId: string } 
   const [step, setStep] = useState<'match' | 'otp' | 'rejected' | 'done'>('match');
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
+  const [rejectMessage, setRejectMessage] = useState('');
 
   useEffect(() => {
     fetch(`/api/bookings/${params.bookingId}`)
@@ -20,11 +21,15 @@ export default function CheckinPage({ params }: { params: { bookingId: string } 
   }
 
   async function reportMismatch() {
-    await fetch(`/api/bookings/${params.bookingId}/reject`, {
+    const res = await fetch(`/api/bookings/${params.bookingId}/reject`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ note: 'Face did not match registered selfie' }),
     });
+    const data = await res.json().catch(() => null);
+    setRejectMessage(
+      data?.message || 'Booking cancelled. Our team will follow up on your refund.'
+    );
     setStep('rejected');
   }
 
@@ -110,7 +115,7 @@ export default function CheckinPage({ params }: { params: { bookingId: string } 
             <AlertIcon className="mx-auto h-8 w-8" style={{ color: 'var(--maroon)' }} />
             <h1 className="font-display mt-4 text-2xl font-medium">Reported</h1>
             <p className="mt-2 text-sm" style={{ color: 'var(--ink-60)' }}>
-              Booking cancelled. Our team will follow up on your refund.
+              {rejectMessage}
             </p>
           </>
         )}

@@ -43,12 +43,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    if (!(await verifyEmailVerificationToken(emailVerificationToken, email))) {
+    const emailVerification = await verifyEmailVerificationToken(emailVerificationToken, email);
+    if (!emailVerification.valid) {
       return NextResponse.json(
         { error: 'Please verify your email with the code we sent before continuing' },
         { status: 400 }
       );
     }
+    const authUserId = emailVerification.authUserId;
 
     if (!/^\d{10}$/.test(String(phoneNumber))) {
       return NextResponse.json(
@@ -131,10 +133,10 @@ export async function POST(request: Request) {
 
       const userResult = await client.query(
         `INSERT INTO users
-          (name, gender, email, phone_number, role, aadhaar_front_url, aadhaar_back_url, aadhaar_last4, selfie_url)
-         VALUES ($1, $2, $3, $4, 'client', $5, $6, $7, $8)
+          (name, gender, email, phone_number, role, aadhaar_front_url, aadhaar_back_url, aadhaar_last4, selfie_url, auth_user_id)
+         VALUES ($1, $2, $3, $4, 'client', $5, $6, $7, $8, $9)
          RETURNING id`,
-        [name, gender, email, phoneNumber, aadhaarFrontUrl, aadhaarBackUrl, aadhaarLast4 || null, selfieUrl]
+        [name, gender, email, phoneNumber, aadhaarFrontUrl, aadhaarBackUrl, aadhaarLast4 || null, selfieUrl, authUserId]
       );
       const clientId = userResult.rows[0].id;
 

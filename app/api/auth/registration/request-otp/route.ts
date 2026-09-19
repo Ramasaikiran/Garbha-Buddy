@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { randomInt } from 'crypto';
-import { sendSignupVerificationEmail } from '@/lib/resend';
+import { getSupabaseAdmin } from '@/lib/supabase';
 
 export async function POST(request: Request) {
   try {
@@ -10,6 +9,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Enter a valid email address' }, { status: 400 });
     }
 
+    // A completed profile with this email already exists in our system.
     const existing = await db.query('SELECT id FROM users WHERE email = $1', [email]);
     if (existing.rows[0]) {
       return NextResponse.json(
@@ -18,25 +18,20 @@ export async function POST(request: Request) {
       );
     }
 
-    const otp = String(randomInt(100000, 999999));
-    await db.query(
-      `INSERT INTO signup_email_otps (email, otp_code, expires_at)
-       VALUES ($1, $2, NOW() + INTERVAL '10 minutes')`,
-      [email, otp]
-    );
+    // Supabase Auth sends the OTP email (via whatever SMTP provider is
+    // configured in the Supabase dashboard) and creates the auth identity
+    // if it doesn't exist yet.
+    const { error } = await getSupabaseAdmin().auth.signInWithOtp({
+      email,
+      options: { shouldCreateUser: true },
+    });
 
-    const resendConfigured = Boolean(process.env.RESEND_API_KEY);
-    if (resendConfigured) {
-      await sendSignupVerificationEmail(email, otp);
+    if (error) {
+      console.error('supabase signInWithOtp (registration) failed', error);
+      return NextResponse.json({ error: 'Could not send verification code. Try again.' }, { status: 500 });
     }
 
-    return NextResponse.json({
-      success: true,
-      message: resendConfigured ? 'Verification code sent' : 'Email not connected yet',
-      // Dev-only fallback so the flow is testable before Resend is wired.
-      devOtp:
-        !resendConfigured && process.env.NODE_ENV !== 'production' ? otp : undefined,
-    });
+    return NextResponse.json({ success: true, message: 'Verification code sent' });
   } catch (err) {
     console.error('registration request-otp failed', err);
     return NextResponse.json({ error: 'Could not send verification code. Try again.' }, { status: 500 });

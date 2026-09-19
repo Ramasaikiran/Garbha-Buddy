@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { getSupabaseAdmin } from '@/lib/supabase';
 import { signEmailVerificationToken } from '@/lib/email-verification';
 
 export async function POST(request: Request) {
@@ -9,19 +9,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'email and otp required' }, { status: 400 });
     }
 
-    const record = await db.query(
-      `SELECT id FROM signup_email_otps
-       WHERE email = $1 AND otp_code = $2 AND consumed = FALSE AND expires_at > NOW()
-       ORDER BY created_at DESC LIMIT 1`,
-      [email, otp]
-    );
-    if (!record.rows[0]) {
+    const { data, error } = await getSupabaseAdmin().auth.verifyOtp({
+      email,
+      token: otp,
+      type: 'email',
+    });
+
+    if (error || !data.user) {
       return NextResponse.json({ error: 'Invalid or expired code' }, { status: 400 });
     }
 
-    await db.query('UPDATE signup_email_otps SET consumed = TRUE WHERE id = $1', [record.rows[0].id]);
-
-    const verificationToken = await signEmailVerificationToken(email);
+    const verificationToken = await signEmailVerificationToken(email, data.user.id);
     return NextResponse.json({ success: true, verificationToken });
   } catch (err) {
     console.error('registration verify-otp failed', err);

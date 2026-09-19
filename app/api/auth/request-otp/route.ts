@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { randomInt } from 'crypto';
-import { sendOtpEmail } from '@/lib/resend';
+import { getSupabaseAdmin } from '@/lib/supabase';
 
 export async function POST(request: Request) {
   try {
@@ -15,26 +14,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No account with this email' }, { status: 404 });
     }
 
-    const otp = String(randomInt(100000, 999999));
-    await db.query(
-      `INSERT INTO login_email_otps (email, otp_code, expires_at)
-       VALUES ($1, $2, NOW() + INTERVAL '10 minutes')`,
-      [email, otp]
-    );
+    const { error } = await getSupabaseAdmin().auth.signInWithOtp({
+      email,
+      options: { shouldCreateUser: false },
+    });
 
-    const resendConfigured = Boolean(process.env.RESEND_API_KEY);
-    if (resendConfigured) {
-      await sendOtpEmail(email, otp);
+    if (error) {
+      console.error('supabase signInWithOtp (login) failed', error);
+      return NextResponse.json({ error: 'Could not send OTP. Try again.' }, { status: 500 });
     }
 
-    return NextResponse.json({
-      success: true,
-      message: resendConfigured ? 'OTP sent' : 'Email not connected yet',
-      // Dev-only fallback so the flow is testable before Resend is wired.
-      // Never returned once RESEND_API_KEY is set, and never in production.
-      devOtp:
-        !resendConfigured && process.env.NODE_ENV !== 'production' ? otp : undefined,
-    });
+    return NextResponse.json({ success: true, message: 'OTP sent' });
   } catch (err) {
     console.error('request-otp failed', err);
     return NextResponse.json({ error: 'Could not send OTP. Try again.' }, { status: 500 });

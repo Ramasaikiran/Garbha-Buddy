@@ -5,8 +5,8 @@ function secretKey() {
   return new TextEncoder().encode(secret);
 }
 
-export async function signEmailVerificationToken(email: string) {
-  return new SignJWT({ email, purpose: 'signup_email_verified' })
+export async function signEmailVerificationToken(email: string, authUserId: string) {
+  return new SignJWT({ email, authUserId, purpose: 'signup_email_verified' })
     .setProtectedHeader({ alg: 'HS256' })
     .setExpirationTime('20m')
     .sign(secretKey());
@@ -15,16 +15,19 @@ export async function signEmailVerificationToken(email: string) {
 export async function verifyEmailVerificationToken(
   token: unknown,
   expectedEmail: string
-): Promise<boolean> {
-  if (typeof token !== 'string' || !token) return false;
+): Promise<{ valid: boolean; authUserId: string | null }> {
+  if (typeof token !== 'string' || !token) return { valid: false, authUserId: null };
   try {
     const { payload } = await jwtVerify(token, secretKey());
-    return (
+    const valid =
       payload.purpose === 'signup_email_verified' &&
       typeof payload.email === 'string' &&
-      payload.email.toLowerCase() === expectedEmail.toLowerCase()
-    );
+      payload.email.toLowerCase() === expectedEmail.toLowerCase();
+    return {
+      valid,
+      authUserId: valid && typeof payload.authUserId === 'string' ? payload.authUserId : null,
+    };
   } catch {
-    return false;
+    return { valid: false, authUserId: null };
   }
 }

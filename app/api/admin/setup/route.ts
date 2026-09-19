@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
 import { db } from '@/lib/db';
+import { getSupabaseAdmin } from '@/lib/supabase';
 
-// One-time bootstrap: creates the first admin account.
-// Gated by ADMIN_SECRET (the env var you already have set) so only you can
-// call it. After your first admin_users row exists, use /admin/login instead.
+// One-time bootstrap: creates the first admin account, in Supabase Auth.
+// Gated by ADMIN_SECRET so only you can call it. After your first
+// admin_users row exists, use /admin/login instead.
 export async function POST(request: Request) {
   try {
     const { secret, email, password } = await request.json();
@@ -27,10 +27,20 @@ export async function POST(request: Request) {
       );
     }
 
-    const passwordHash = await bcrypt.hash(password, 12);
+    const { data, error } = await getSupabaseAdmin().auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+    });
+
+    if (error || !data.user) {
+      console.error('supabase admin.createUser failed', error);
+      return NextResponse.json({ error: error?.message || 'Setup failed. Try again.' }, { status: 500 });
+    }
+
     await db.query(
-      'INSERT INTO admin_users (email, password_hash) VALUES ($1, $2)',
-      [email, passwordHash]
+      'INSERT INTO admin_users (email, auth_user_id) VALUES ($1, $2)',
+      [email, data.user.id]
     );
 
     return NextResponse.json({ success: true });

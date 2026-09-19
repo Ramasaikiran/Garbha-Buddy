@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { getSupabaseAdmin } from '@/lib/supabase';
 import { SignJWT } from 'jose';
 
 export async function POST(request: Request) {
@@ -9,17 +10,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'email and otp required' }, { status: 400 });
     }
 
-    const record = await db.query(
-      `SELECT id FROM login_email_otps
-       WHERE email = $1 AND otp_code = $2 AND consumed = FALSE AND expires_at > NOW()
-       ORDER BY created_at DESC LIMIT 1`,
-      [email, otp]
-    );
-    if (!record.rows[0]) {
+    const { data, error } = await getSupabaseAdmin().auth.verifyOtp({
+      email,
+      token: otp,
+      type: 'email',
+    });
+
+    if (error || !data.user) {
       return NextResponse.json({ error: 'Invalid or expired OTP' }, { status: 400 });
     }
-
-    await db.query('UPDATE login_email_otps SET consumed = TRUE WHERE id = $1', [record.rows[0].id]);
 
     const user = await db.query(
       'SELECT id, name, role FROM users WHERE email = $1',
@@ -30,6 +29,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No account with this email' }, { status: 404 });
     }
 
+    // Our own session cookie, unchanged from before — Supabase only handled
+    // the OTP itself, not ongoing session/authorization for the rest of the app.
     const token = await new SignJWT({ userId: u.id, role: u.role })
       .setProtectedHeader({ alg: 'HS256' })
       .setExpirationTime('30d')

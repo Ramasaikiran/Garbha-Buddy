@@ -118,6 +118,11 @@ export default function DashboardPage() {
                   {b.client_phone}
                 </p>
               )}
+              {role === 'client' && b.companion_phone && (
+                <p className="mt-1 text-xs" style={{ color: 'var(--ink-40)' }}>
+                  {b.companion_phone}
+                </p>
+              )}
               {role === 'companion' && b.payout_status && (
                 <p
                   className="mt-2 inline-block rounded-full px-2.5 py-0.5 text-xs font-medium"

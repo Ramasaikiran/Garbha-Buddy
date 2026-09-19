@@ -9,7 +9,9 @@ export async function GET() {
   const result = await db.query(
     `SELECT b.id, b.status, b.amount_paid, b.booking_date, b.payout_status,
             client.name AS client_name, client.phone_number AS client_phone,
-            companion.name AS companion_name
+            companion.name AS companion_name,
+            CASE WHEN b.status IN ('active', 'completed')
+                 THEN companion.phone_number ELSE NULL END AS companion_phone
      FROM bookings b
      JOIN users client ON client.id = b.client_id
      JOIN users companion ON companion.id = b.companion_id

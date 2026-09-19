@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { generateCompanionSlug } from '@/lib/slug';
+import { verifyEmailVerificationToken } from '@/lib/email-verification';
 
 function isValidUrl(value: unknown): value is string {
   if (typeof value !== 'string') return false;
@@ -43,10 +44,18 @@ export async function POST(request: Request) {
       aadhaarBackUrl,
       aadhaarLast4,
       selfieUrl,
+      emailVerificationToken,
     } = body;
 
     if (!name || !gender || !email || !phoneNumber || !city) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    if (!(await verifyEmailVerificationToken(emailVerificationToken, email))) {
+      return NextResponse.json(
+        { error: 'Please verify your email with the code we sent before continuing' },
+        { status: 400 }
+      );
     }
 
     if (!/^\d{10}$/.test(String(phoneNumber))) {
@@ -89,15 +98,19 @@ export async function POST(request: Request) {
       }
     }
 
-    // Pre-check for a friendly duplicate message; the transaction's unique
-    // constraint below is the real guarantee against races.
-    const existingUser = await db.query(
-      'SELECT id FROM users WHERE phone_number = $1 OR email = $2',
-      [phoneNumber, email]
-    );
-    if (existingUser.rows[0]) {
+    // Pre-check for a friendly, field-specific duplicate message; the
+    // transaction's unique constraints below are the real guarantee against races.
+    const existingPhone = await db.query('SELECT id FROM users WHERE phone_number = $1', [phoneNumber]);
+    if (existingPhone.rows[0]) {
       return NextResponse.json(
-        { error: 'An account with this phone number or email already exists' },
+        { error: 'This phone number is already registered to another account' },
+        { status: 409 }
+      );
+    }
+    const existingEmail = await db.query('SELECT id FROM users WHERE email = $1', [email]);
+    if (existingEmail.rows[0]) {
+      return NextResponse.json(
+        { error: 'This email is already registered to another account' },
         { status: 409 }
       );
     }

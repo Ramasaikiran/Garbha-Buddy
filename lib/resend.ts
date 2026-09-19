@@ -17,3 +17,12 @@ export async function sendOtpEmail(email: string, otp: string) {
     html: `<p>Your login code is <strong>${otp}</strong>. It expires in 10 minutes.</p>`,
   });
 }
+
+export async function sendSignupVerificationEmail(email: string, otp: string) {
+  await getResend().emails.send({
+    from: 'GarbaBuddy <verify@garbabuddy.lol>',
+    to: email,
+    subject: `Verify your email: ${otp}`,
+    html: `<p>Your Garba Buddy email verification code is <strong>${otp}</strong>. It expires in 10 minutes. Enter it to continue registering.</p>`,
+  });
+}

@@ -3,7 +3,15 @@
 import { useState } from 'react';
 import { CheckIcon } from '@/components/icons';
 
-const CITIES = ['Ahmedabad', 'Mumbai', 'Surat', 'Vadodara', 'Rajkot', 'Bengaluru', 'Hyderabad', 'Chennai', 'Noida', 'Delhi NCR'];
+const CITIES = [
+  'Mumbai', 'Delhi NCR', 'Bengaluru', 'Hyderabad', 'Ahmedabad', 'Chennai', 'Kolkata', 'Pune',
+  'Jaipur', 'Surat', 'Lucknow', 'Kanpur', 'Nagpur', 'Indore', 'Bhopal', 'Visakhapatnam',
+  'Patna', 'Vadodara', 'Ghaziabad', 'Ludhiana', 'Agra', 'Nashik', 'Faridabad', 'Meerut',
+  'Rajkot', 'Varanasi', 'Srinagar', 'Aurangabad', 'Amritsar', 'Navi Mumbai', 'Prayagraj',
+  'Ranchi', 'Howrah', 'Coimbatore', 'Jabalpur', 'Gwalior', 'Vijayawada', 'Jodhpur',
+  'Madurai', 'Raipur', 'Kota', 'Guwahati', 'Chandigarh', 'Thiruvananthapuram', 'Kochi',
+  'Mysuru', 'Dehradun', 'Noida', 'Gurugram', 'Gandhinagar', 'Anand', 'Bhavnagar', 'Jamnagar',
+];
 const TIERS = [
   { value: 'gold', label: 'Gold — ₹999 / 2hr' },
   { value: 'silver', label: 'Silver — ₹1,499 / 4hr' },
@@ -33,8 +41,63 @@ export default function CompanionRegisterPage() {
   const [result, setResult] = useState<{ slug: string; shareableLink: string } | null>(null);
   const [copied, setCopied] = useState(false);
 
+  const [emailOtpStatus, setEmailOtpStatus] = useState<'idle' | 'sending' | 'sent' | 'verifying' | 'verified'>('idle');
+  const [emailOtp, setEmailOtp] = useState('');
+  const [emailOtpError, setEmailOtpError] = useState('');
+  const [emailDevOtp, setEmailDevOtp] = useState<string | null>(null);
+  const [emailVerificationToken, setEmailVerificationToken] = useState<string | null>(null);
+  const [verifiedEmail, setVerifiedEmail] = useState('');
+
+  async function sendEmailOtp() {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      setEmailOtpError('Enter a valid email address first');
+      return;
+    }
+    setEmailOtpStatus('sending');
+    setEmailOtpError('');
+    try {
+      const res = await fetch('/api/auth/registration/request-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: form.email }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Could not send code');
+      setEmailDevOtp(data.devOtp || null);
+      setEmailOtpStatus('sent');
+    } catch (err: any) {
+      setEmailOtpError(err.message);
+      setEmailOtpStatus('idle');
+    }
+  }
+
+  async function verifyEmailOtp() {
+    setEmailOtpStatus('verifying');
+    setEmailOtpError('');
+    try {
+      const res = await fetch('/api/auth/registration/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: form.email, otp: emailOtp }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Could not verify code');
+      setEmailVerificationToken(data.verificationToken);
+      setVerifiedEmail(form.email);
+      setEmailOtpStatus('verified');
+    } catch (err: any) {
+      setEmailOtpError(err.message);
+      setEmailOtpStatus('sent');
+    }
+  }
+
   function update(field: string, value: string) {
     setForm((f) => ({ ...f, [field]: value }));
+    if (field === 'email' && value !== verifiedEmail) {
+      setEmailOtpStatus('idle');
+      setEmailVerificationToken(null);
+      setEmailOtp('');
+    }
   }
 
   function updateDate(index: number, value: string) {
@@ -57,7 +120,7 @@ export default function CompanionRegisterPage() {
   }
 
   function stepValid(s: number) {
-    if (s === 0) return form.name && form.gender && form.phoneNumber.length === 10 && form.email;
+    if (s === 0) return form.name && form.gender && form.phoneNumber.length === 10 && form.email && emailOtpStatus === 'verified';
     if (s === 1) return form.videoProofUrl;
     if (s === 2) return form.aadhaarFrontUrl && form.aadhaarBackUrl && form.selfieUrl;
     return true;
@@ -92,6 +155,7 @@ export default function CompanionRegisterPage() {
         body: JSON.stringify({
           ...form,
           availabilityDates: form.availabilityDates.filter(Boolean),
+          emailVerificationToken,
         }),
       });
       const data = await res.json();
@@ -223,6 +287,54 @@ export default function CompanionRegisterPage() {
                       placeholder="you@example.com"
                     />
                   </Field>
+
+                  {emailOtpStatus === 'verified' ? (
+                    <p className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--gold-deep)' }}>
+                      <CheckIcon className="h-3.5 w-3.5" /> Email verified
+                    </p>
+                  ) : emailOtpStatus === 'sent' || emailOtpStatus === 'verifying' ? (
+                    <div className="space-y-2">
+                      <div className="flex gap-2">
+                        <input
+                          value={emailOtp}
+                          onChange={(e) => setEmailOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                          className="field-input flex-1"
+                          placeholder="6-digit code"
+                        />
+                        <button
+                          type="button"
+                          onClick={verifyEmailOtp}
+                          disabled={emailOtpStatus === 'verifying' || emailOtp.length !== 6}
+                          className="btn-primary !px-4 !text-xs"
+                        >
+                          {emailOtpStatus === 'verifying' ? 'Verifying…' : 'Verify'}
+                        </button>
+                      </div>
+                      {emailDevOtp && (
+                        <p className="text-xs" style={{ color: 'var(--gold-deep)' }}>
+                          Email not connected yet — your test code is <strong>{emailDevOtp}</strong>.
+                        </p>
+                      )}
+                      <button
+                        type="button"
+                        onClick={sendEmailOtp}
+                        className="text-xs underline"
+                        style={{ color: 'var(--ink-40)' }}
+                      >
+                        Resend code
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={sendEmailOtp}
+                      disabled={emailOtpStatus === 'sending' || !form.email}
+                      className="btn-secondary !px-4 !py-2 !text-xs"
+                    >
+                      {emailOtpStatus === 'sending' ? 'Sending…' : 'Send verification code'}
+                    </button>
+                  )}
+                  {emailOtpError && <p className="text-xs" style={{ color: 'var(--maroon)' }}>{emailOtpError}</p>}
                   <div className="grid grid-cols-2 gap-4">
                     <Field label="City">
                       <select

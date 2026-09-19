@@ -36,6 +36,56 @@ function ClientRegisterForm() {
   const [companionName, setCompanionName] = useState('');
   const [razorpayReady, setRazorpayReady] = useState(false);
 
+  const [emailOtpStatus, setEmailOtpStatus] = useState<'idle' | 'sending' | 'sent' | 'verifying' | 'verified'>('idle');
+  const [emailOtp, setEmailOtp] = useState('');
+  const [emailOtpError, setEmailOtpError] = useState('');
+  const [emailDevOtp, setEmailDevOtp] = useState<string | null>(null);
+  const [emailVerificationToken, setEmailVerificationToken] = useState<string | null>(null);
+  const [verifiedEmail, setVerifiedEmail] = useState('');
+
+  async function sendEmailOtp() {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      setEmailOtpError('Enter a valid email address first');
+      return;
+    }
+    setEmailOtpStatus('sending');
+    setEmailOtpError('');
+    try {
+      const res = await fetch('/api/auth/registration/request-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: form.email }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Could not send code');
+      setEmailDevOtp(data.devOtp || null);
+      setEmailOtpStatus('sent');
+    } catch (err: any) {
+      setEmailOtpError(err.message);
+      setEmailOtpStatus('idle');
+    }
+  }
+
+  async function verifyEmailOtp() {
+    setEmailOtpStatus('verifying');
+    setEmailOtpError('');
+    try {
+      const res = await fetch('/api/auth/registration/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: form.email, otp: emailOtp }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Could not verify code');
+      setEmailVerificationToken(data.verificationToken);
+      setVerifiedEmail(form.email);
+      setEmailOtpStatus('verified');
+    } catch (err: any) {
+      setEmailOtpError(err.message);
+      setEmailOtpStatus('sent');
+    }
+  }
+
   useEffect(() => {
     if (!companionId) return;
     fetch(`/api/companions/${companionId}`)
@@ -55,10 +105,22 @@ function ClientRegisterForm() {
 
   function update(field: string, value: string) {
     setForm((f) => ({ ...f, [field]: value }));
+    if (field === 'email' && value !== verifiedEmail) {
+      setEmailOtpStatus('idle');
+      setEmailVerificationToken(null);
+      setEmailOtp('');
+    }
   }
 
   function stepOneValid() {
-    return form.name && form.gender && form.phoneNumber.length === 10 && form.email && !genderBlocked;
+    return (
+      form.name &&
+      form.gender &&
+      form.phoneNumber.length === 10 &&
+      form.email &&
+      emailOtpStatus === 'verified' &&
+      !genderBlocked
+    );
   }
 
   function next() {
@@ -108,6 +170,10 @@ function ClientRegisterForm() {
       setError(`${companionName} only accepts female clients.`);
       return;
     }
+    if (emailOtpStatus !== 'verified') {
+      setError('Please verify your email before continuing.');
+      return;
+    }
     if (companionId && !liabilityAccepted) {
       setError('Please confirm the ticket liability terms to continue');
       return;
@@ -122,6 +188,7 @@ function ClientRegisterForm() {
           ...form,
           companionId,
           ticketLiabilityAccepted: liabilityAccepted,
+          emailVerificationToken,
         }),
       });
       const data = await res.json();
@@ -246,6 +313,54 @@ function ClientRegisterForm() {
                   placeholder="you@example.com"
                 />
               </Field>
+
+              {emailOtpStatus === 'verified' ? (
+                <p className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--gold-deep)' }}>
+                  <CheckIcon className="h-3.5 w-3.5" /> Email verified
+                </p>
+              ) : emailOtpStatus === 'sent' || emailOtpStatus === 'verifying' ? (
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <input
+                      value={emailOtp}
+                      onChange={(e) => setEmailOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                      className="field-input flex-1"
+                      placeholder="6-digit code"
+                    />
+                    <button
+                      type="button"
+                      onClick={verifyEmailOtp}
+                      disabled={emailOtpStatus === 'verifying' || emailOtp.length !== 6}
+                      className="btn-primary !px-4 !text-xs"
+                    >
+                      {emailOtpStatus === 'verifying' ? 'Verifying…' : 'Verify'}
+                    </button>
+                  </div>
+                  {emailDevOtp && (
+                    <p className="text-xs" style={{ color: 'var(--gold-deep)' }}>
+                      Email not connected yet — your test code is <strong>{emailDevOtp}</strong>.
+                    </p>
+                  )}
+                  <button
+                    type="button"
+                    onClick={sendEmailOtp}
+                    className="text-xs underline"
+                    style={{ color: 'var(--ink-40)' }}
+                  >
+                    Resend code
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={sendEmailOtp}
+                  disabled={emailOtpStatus === 'sending' || !form.email}
+                  className="btn-secondary !px-4 !py-2 !text-xs"
+                >
+                  {emailOtpStatus === 'sending' ? 'Sending…' : 'Send verification code'}
+                </button>
+              )}
+              {emailOtpError && <p className="text-xs" style={{ color: 'var(--maroon)' }}>{emailOtpError}</p>}
             </>
           )}
 

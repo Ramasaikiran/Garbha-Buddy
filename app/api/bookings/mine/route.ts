@@ -22,9 +22,13 @@ export async function GET() {
 
   let availabilityDates: string[] = [];
   let slug: string | null = null;
+  let isVerified: boolean | null = null;
   if (session.role === 'companion') {
     const meta = await db.query(
-      'SELECT availability_dates, slug FROM companions_meta WHERE id = $1',
+      `SELECT cm.availability_dates, cm.slug, u.is_verified
+       FROM companions_meta cm
+       JOIN users u ON u.id = cm.id
+       WHERE cm.id = $1`,
       [session.userId]
     );
     const raw = meta.rows[0]?.availability_dates;
@@ -38,6 +42,7 @@ export async function GET() {
         .filter(Boolean);
     }
     slug = meta.rows[0]?.slug || null;
+    isVerified = meta.rows[0]?.is_verified ?? false;
   }
 
   return NextResponse.json({
@@ -45,5 +50,6 @@ export async function GET() {
     bookings: result.rows,
     availabilityDates,
     slug,
+    isVerified,
   });
 }

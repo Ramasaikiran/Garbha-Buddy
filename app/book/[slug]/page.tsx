@@ -10,7 +10,7 @@ const TIER_LABEL: Record<string, string> = {
 
 async function getCompanion(slug: string) {
   const result = await db.query(
-    `SELECT u.id, u.name, cm.city, cm.tier, cm.video_proof_url, cm.preference,
+    `SELECT u.id, u.name, u.is_verified, cm.city, cm.tier, cm.video_proof_url, cm.preference,
             cm.profile_photo_url, cm.bio
      FROM companions_meta cm
      JOIN users u ON u.id = cm.id
@@ -23,6 +23,29 @@ async function getCompanion(slug: string) {
 export default async function BookCompanionPage({ params }: { params: { slug: string } }) {
   const companion = await getCompanion(params.slug);
   if (!companion) notFound();
+
+  if (!companion.is_verified) {
+    return (
+      <main style={{ background: 'var(--paper)' }} className="flex min-h-screen items-center justify-center px-6 text-center">
+        <div className="card max-w-sm p-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.28em]" style={{ color: 'var(--gold)' }}>
+            Garba Buddy
+          </p>
+          <h1 className="font-display mt-3 text-2xl font-medium">Not available yet</h1>
+          <p className="mt-3 text-sm leading-relaxed" style={{ color: 'var(--ink-60)' }}>
+            This companion's profile is still being verified. Check back
+            soon, or browse other verified companions.
+          </p>
+          <a
+            href="/browse"
+            className="btn-primary mt-5 inline-block"
+          >
+            Browse companions
+          </a>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main style={{ background: 'var(--paper)' }} className="min-h-screen px-6 py-16">

@@ -21,6 +21,7 @@ const PAYOUT_LABEL: Record<string, string> = {
 export default function DashboardPage() {
   const [bookings, setBookings] = useState<any[]>([]);
   const [role, setRole] = useState<string | null>(null);
+  const [isVerified, setIsVerified] = useState<boolean | null>(null);
   const [availabilityDates, setAvailabilityDates] = useState<string[]>([]);
   const [slug, setSlug] = useState<string | null>(null);
   const [error, setError] = useState('');
@@ -39,6 +40,7 @@ export default function DashboardPage() {
         }
         setBookings(data.bookings || []);
         setRole(data.role || null);
+        setIsVerified(data.isVerified);
         setAvailabilityDates(data.availabilityDates || []);
         setSlug(data.slug || null);
       });
@@ -110,6 +112,29 @@ export default function DashboardPage() {
             log in
           </Link>
         </p>
+      </main>
+    );
+  }
+
+  if (role === 'companion' && isVerified === false) {
+    return (
+      <main
+        className="flex min-h-screen items-center justify-center px-6 text-center"
+        style={{ background: 'var(--paper)' }}
+      >
+        <div className="card max-w-sm p-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.28em]" style={{ color: 'var(--gold)' }}>
+            Verification pending
+          </p>
+          <h1 className="font-display mt-3 text-2xl font-medium">
+            Your profile is under review
+          </h1>
+          <p className="mt-3 text-sm leading-relaxed" style={{ color: 'var(--ink-60)' }}>
+            Our team is reviewing your documents. Once approved, you'll be able
+            to view your dashboard, get your shareable link, and start
+            receiving bookings.
+          </p>
+        </div>
       </main>
     );
   }

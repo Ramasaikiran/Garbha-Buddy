@@ -42,7 +42,6 @@ export default function CompanionRegisterPage() {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'error'>('idle');
   const [error, setError] = useState('');
   const [result, setResult] = useState<{ slug: string; shareableLink: string } | null>(null);
-  const [copied, setCopied] = useState(false);
 
   const [emailOtpStatus, setEmailOtpStatus] = useState<'idle' | 'sending' | 'sent' | 'verifying' | 'verified'>('idle');
   const [emailOtp, setEmailOtp] = useState('');
@@ -180,13 +179,6 @@ export default function CompanionRegisterPage() {
     }
   }
 
-  function copyLink() {
-    if (!result) return;
-    navigator.clipboard.writeText(result.shareableLink);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }
-
   return (
     <main style={{ background: 'var(--paper)' }} className="min-h-screen px-6 py-16">
       <div className="mx-auto max-w-lg">
@@ -209,27 +201,16 @@ export default function CompanionRegisterPage() {
             <CheckIcon className="mx-auto h-8 w-8" style={{ color: 'var(--gold)' }} />
             <h2 className="font-display mt-4 text-2xl font-medium">Registration submitted</h2>
             <p className="mt-2 text-sm" style={{ color: 'var(--ink-60)' }}>
-              Our team reviews your ID and video within 24 hours. Once
-              approved, this link goes live and anyone who books through it
-              comes straight to you:
+              Our team reviews your ID and dance video before your profile goes
+              live. You'll be able to get your shareable booking link and
+              manage your profile once approved.
             </p>
-            <div
-              className="mt-6 flex items-center gap-2 rounded-xl p-3"
-              style={{ background: 'var(--paper)', border: '1px solid var(--line)' }}
-            >
-              <code className="flex-1 truncate text-left text-sm" style={{ color: 'var(--ink)' }}>
-                {result.shareableLink}
-              </code>
-              <button onClick={copyLink} className="btn-primary shrink-0 !px-4 !py-1.5 !text-xs">
-                {copied ? 'Copied' : 'Copy'}
-              </button>
-            </div>
             <p className="mt-6 text-sm" style={{ color: 'var(--ink-40)' }}>
-              Coming back later? Log in anytime at{' '}
+              Log in anytime at{' '}
               <Link href="/login" className="underline" style={{ color: 'var(--gold-deep)' }}>
                 garbabuddy.lol/login
               </Link>{' '}
-              with this email to check your status and bookings.
+              to check your approval status.
             </p>
           </div>
         ) : (

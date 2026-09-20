@@ -40,6 +40,14 @@ export async function PATCH(request: Request) {
   }
 
   try {
+    const verified = await db.query('SELECT is_verified FROM users WHERE id = $1', [session.userId]);
+    if (!verified.rows[0]?.is_verified) {
+      return NextResponse.json(
+        { error: 'Your profile is still awaiting admin approval' },
+        { status: 403 }
+      );
+    }
+
     const { bio, profilePhotoUrl } = await request.json();
 
     if (typeof bio === 'string' && bio.length > 500) {

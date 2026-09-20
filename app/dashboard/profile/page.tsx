@@ -98,6 +98,35 @@ export default function CompanionProfilePage() {
     );
   }
 
+  if (!profile.is_verified) {
+    return (
+      <main
+        className="flex min-h-screen items-center justify-center px-6 text-center"
+        style={{ background: 'var(--paper)' }}
+      >
+        <div className="card max-w-sm p-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.28em]" style={{ color: 'var(--gold)' }}>
+            Verification pending
+          </p>
+          <h1 className="font-display mt-3 text-2xl font-medium">
+            Your profile is under review
+          </h1>
+          <p className="mt-3 text-sm leading-relaxed" style={{ color: 'var(--ink-60)' }}>
+            Once our team approves your documents, you'll be able to add a
+            photo and bio, and get your shareable booking link.
+          </p>
+          <Link
+            href="/dashboard"
+            className="mt-5 inline-block text-sm underline"
+            style={{ color: 'var(--gold-deep)' }}
+          >
+            ← Back to dashboard
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main style={{ background: 'var(--paper)' }} className="min-h-screen px-6 py-16">
       <div className="mx-auto max-w-2xl">
@@ -107,16 +136,6 @@ export default function CompanionProfilePage() {
             ← Bookings
           </Link>
         </div>
-
-        {!profile.is_verified && (
-          <p
-            className="mt-4 rounded-lg px-4 py-3 text-sm"
-            style={{ background: 'rgba(122, 36, 56, 0.06)', color: 'var(--maroon)' }}
-          >
-            Your profile is awaiting admin approval — it won't appear in search yet, but your
-            share link already works once approved.
-          </p>
-        )}
 
         <div className="mt-6 grid gap-6 sm:grid-cols-2">
           {/* Editable fields */}

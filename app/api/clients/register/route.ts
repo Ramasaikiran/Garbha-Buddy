@@ -132,11 +132,20 @@ export async function POST(request: Request) {
     let companionRow: { preference: string; tier: string } | null = null;
     if (companionId) {
       const result = await db.query(
-        'SELECT preference, tier FROM companions_meta WHERE id = $1',
+        `SELECT cm.preference, cm.tier, u.is_verified
+         FROM companions_meta cm
+         JOIN users u ON u.id = cm.id
+         WHERE cm.id = $1`,
         [companionId]
       );
       if (!result.rows[0]) {
         return NextResponse.json({ error: 'Companion not found' }, { status: 404 });
+      }
+      if (!result.rows[0].is_verified) {
+        return NextResponse.json(
+          { error: 'This companion is not yet verified and cannot be booked' },
+          { status: 400 }
+        );
       }
       companionRow = result.rows[0];
       if (

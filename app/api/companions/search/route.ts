@@ -7,7 +7,7 @@ export async function GET(request: Request) {
     const city = searchParams.get('city');
 
     const result = await db.query(
-      `SELECT u.id, u.name, cm.city, cm.tier, cm.slug, cm.video_proof_url
+      `SELECT u.id, u.name, cm.city, cm.tier, cm.slug, cm.video_proof_url, cm.profile_photo_url, cm.bio
        FROM companions_meta cm
        JOIN users u ON u.id = cm.id
        WHERE u.is_verified = TRUE

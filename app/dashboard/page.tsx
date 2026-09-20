@@ -128,6 +128,11 @@ export default function DashboardPage() {
         <h1 className="font-display text-4xl font-medium">
           {role === 'companion' ? 'Who booked you' : 'Your bookings'}
         </h1>
+        {role === 'companion' && (
+          <Link href="/dashboard/profile" className="mt-2 inline-block text-sm underline" style={{ color: 'var(--gold-deep)' }}>
+            Edit your profile →
+          </Link>
+        )}
 
         {role === 'companion' && shareUrl && (
           <div className="card mt-6 p-5">

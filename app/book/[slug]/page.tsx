@@ -10,7 +10,8 @@ const TIER_LABEL: Record<string, string> = {
 
 async function getCompanion(slug: string) {
   const result = await db.query(
-    `SELECT u.id, u.name, cm.city, cm.tier, cm.video_proof_url, cm.preference
+    `SELECT u.id, u.name, cm.city, cm.tier, cm.video_proof_url, cm.preference,
+            cm.profile_photo_url, cm.bio
      FROM companions_meta cm
      JOIN users u ON u.id = cm.id
      WHERE cm.slug = $1`,
@@ -29,6 +30,14 @@ export default async function BookCompanionPage({ params }: { params: { slug: st
         <p className="text-xs font-semibold uppercase tracking-[0.28em]" style={{ color: 'var(--gold)' }}>
           Garba Buddy
         </p>
+        {companion.profile_photo_url && (
+          <img
+            src={companion.profile_photo_url}
+            alt={companion.name}
+            className="mt-4 h-56 w-full rounded-xl object-cover"
+            style={{ border: '1px solid var(--line)' }}
+          />
+        )}
         <h1 className="font-display mt-3 text-3xl font-medium">{companion.name}</h1>
         <p className="mt-1 text-sm" style={{ color: 'var(--ink-60)' }}>{companion.city}</p>
         {companion.preference === 'girls_only' && (
@@ -38,6 +47,12 @@ export default async function BookCompanionPage({ params }: { params: { slug: st
           >
             Girls only
           </span>
+        )}
+
+        {companion.bio && (
+          <p className="mt-4 text-sm leading-relaxed" style={{ color: 'var(--ink-60)' }}>
+            {companion.bio}
+          </p>
         )}
 
         <div className="mt-6 rounded-xl p-4" style={{ background: 'var(--paper)', border: '1px solid var(--line)' }}>

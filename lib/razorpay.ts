@@ -17,3 +17,6 @@ export const TIER_AMOUNTS: Record<string, number> = {
   silver: 1499,
   diamond: 1999,
 };
+
+// Companion keeps 70% of the booking value; platform keeps 30%.
+export const COMPANION_SHARE = 0.7;

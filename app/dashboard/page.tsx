@@ -29,6 +29,7 @@ export default function DashboardPage() {
   const [actionMessage, setActionMessage] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
+  const [stats, setStats] = useState<any>(null);
 
   function load() {
     fetch('/api/bookings/mine')
@@ -43,6 +44,11 @@ export default function DashboardPage() {
         setIsVerified(data.isVerified);
         setAvailabilityDates(data.availabilityDates || []);
         setSlug(data.slug || null);
+        if (data.role === 'companion') {
+          fetch('/api/companions/stats')
+            .then((r) => r.json())
+            .then((s) => setStats(s));
+        }
       });
   }
 
@@ -184,6 +190,27 @@ export default function DashboardPage() {
           </div>
         )}
 
+        {role === 'companion' && stats && (
+          <div className="card mt-6 p-5">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--gold)' }}>
+              Your stats
+            </p>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <Stat label="Total bookings" value={stats.totalBookings} />
+              <Stat label="Clients" value={stats.uniqueClients} />
+              <Stat label="Today" value={stats.bookingsToday} />
+              <Stat label="Last 7 days" value={stats.bookingsLast7Days} />
+              <Stat label="Amount pending" value={`₹${stats.amountPending}`} />
+              <Stat label="Amount received" value={`₹${stats.amountReceived}`} />
+            </div>
+            {stats.penaltiesPending > 0 && (
+              <p className="mt-3 text-xs" style={{ color: 'var(--maroon)' }}>
+                ₹{stats.penaltiesPending} in no-show penalties will be deducted from your next payout.
+              </p>
+            )}
+          </div>
+        )}
+
         {role === 'companion' && allDates.length > 0 && (
           <div className="card mt-6 p-5">
             <p className="mb-3 text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--gold)' }}>
@@ -301,5 +328,14 @@ export default function DashboardPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: any }) {
+  return (
+    <div className="rounded-lg p-3" style={{ background: 'var(--paper)', border: '1px solid var(--line)' }}>
+      <p className="text-xs uppercase tracking-wide" style={{ color: 'var(--ink-40)' }}>{label}</p>
+      <p className="font-display mt-1 text-lg font-medium">{value}</p>
+    </div>
   );
 }

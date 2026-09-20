@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-
-const COMPANION_SHARE = 0.7;
+import { COMPANION_SHARE } from '@/lib/razorpay';
 
 // Trigger via Vercel Cron (GET, auth header auto-added by Vercel using
 // CRON_SECRET) or manually via POST with the same Bearer header.

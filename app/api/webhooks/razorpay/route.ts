@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     if (bookingId) {
       await db.query(
         `UPDATE bookings
-         SET status = 'active', razorpay_payment_id = $1
+         SET status = 'active', razorpay_payment_id = $1, payout_status = 'escrow'
          WHERE id = $2 AND status = 'pending'`,
         [payment.id, bookingId]
       );

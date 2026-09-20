@@ -25,6 +25,8 @@ export default function CompanionRegisterPage() {
     name: '',
     gender: '',
     email: '',
+    password: '',
+    confirmPassword: '',
     phoneNumber: '',
     city: CITIES[0],
     tier: 'gold',
@@ -120,7 +122,16 @@ export default function CompanionRegisterPage() {
   }
 
   function stepValid(s: number) {
-    if (s === 0) return form.name && form.gender && form.phoneNumber.length === 10 && form.email && emailOtpStatus === 'verified';
+    if (s === 0)
+      return (
+        form.name &&
+        form.gender &&
+        form.phoneNumber.length === 10 &&
+        form.email &&
+        emailOtpStatus === 'verified' &&
+        form.password.length >= 8 &&
+        form.password === form.confirmPassword
+      );
     if (s === 1) return form.videoProofUrl;
     if (s === 2) return form.aadhaarFrontUrl && form.aadhaarBackUrl && form.selfieUrl;
     return true;
@@ -335,6 +346,34 @@ export default function CompanionRegisterPage() {
                     </button>
                   )}
                   {emailOtpError && <p className="text-xs" style={{ color: 'var(--maroon)' }}>{emailOtpError}</p>}
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <Field label="Password">
+                      <input
+                        required
+                        type="password"
+                        minLength={8}
+                        value={form.password}
+                        onChange={(e) => update('password', e.target.value)}
+                        className="field-input"
+                        placeholder="Min 8 characters"
+                      />
+                    </Field>
+                    <Field label="Confirm password">
+                      <input
+                        required
+                        type="password"
+                        value={form.confirmPassword}
+                        onChange={(e) => update('confirmPassword', e.target.value)}
+                        className="field-input"
+                        placeholder="Re-enter password"
+                      />
+                    </Field>
+                  </div>
+                  {form.confirmPassword && form.password !== form.confirmPassword && (
+                    <p className="text-xs" style={{ color: 'var(--maroon)' }}>Passwords don't match</p>
+                  )}
+
                   <div className="grid grid-cols-2 gap-4">
                     <Field label="City">
                       <select

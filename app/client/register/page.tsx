@@ -23,6 +23,8 @@ function ClientRegisterForm() {
     name: '',
     gender: '',
     email: '',
+    password: '',
+    confirmPassword: '',
     phoneNumber: '',
     aadhaarFrontUrl: '',
     aadhaarBackUrl: '',
@@ -119,6 +121,8 @@ function ClientRegisterForm() {
       form.phoneNumber.length === 10 &&
       form.email &&
       emailOtpStatus === 'verified' &&
+      form.password.length >= 8 &&
+      form.password === form.confirmPassword &&
       !genderBlocked
     );
   }
@@ -172,6 +176,10 @@ function ClientRegisterForm() {
     }
     if (emailOtpStatus !== 'verified') {
       setError('Please verify your email before continuing.');
+      return;
+    }
+    if (form.password.length < 8 || form.password !== form.confirmPassword) {
+      setError('Passwords must match and be at least 8 characters.');
       return;
     }
     if (companionId && !liabilityAccepted) {
@@ -361,6 +369,31 @@ function ClientRegisterForm() {
                 </button>
               )}
               {emailOtpError && <p className="text-xs" style={{ color: 'var(--maroon)' }}>{emailOtpError}</p>}
+
+              <Field label="Password">
+                <input
+                  required
+                  type="password"
+                  minLength={8}
+                  value={form.password}
+                  onChange={(e) => update('password', e.target.value)}
+                  className="field-input"
+                  placeholder="Min 8 characters"
+                />
+              </Field>
+              <Field label="Confirm password">
+                <input
+                  required
+                  type="password"
+                  value={form.confirmPassword}
+                  onChange={(e) => update('confirmPassword', e.target.value)}
+                  className="field-input"
+                  placeholder="Re-enter password"
+                />
+              </Field>
+              {form.confirmPassword && form.password !== form.confirmPassword && (
+                <p className="text-xs" style={{ color: 'var(--maroon)' }}>Passwords don't match</p>
+              )}
             </>
           )}
 

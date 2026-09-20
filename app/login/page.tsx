@@ -2,53 +2,28 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
-  const [otp, setOtp] = useState('');
-  const [step, setStep] = useState<'email' | 'otp'>('email');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [devOtp, setDevOtp] = useState<string | null>(null);
   const router = useRouter();
 
-  async function requestOtp(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
-      const res = await fetch('/api/auth/request-otp', {
+      const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, password }),
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || 'Could not send OTP');
-        return;
-      }
-      setDevOtp(data.devOtp || null);
-      setStep('otp');
-    } catch {
-      setError('Network error — check your connection and try again.');
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function verifyOtp(e: React.FormEvent) {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-    try {
-      const res = await fetch('/api/auth/verify-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, otp }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || 'Could not verify OTP');
+        setError(data.error || 'Login failed');
         return;
       }
       router.push('/dashboard');
@@ -64,54 +39,42 @@ export default function LoginPage() {
       className="flex min-h-screen items-center justify-center px-6"
       style={{ background: 'var(--paper)' }}
     >
-      <form
-        onSubmit={step === 'email' ? requestOtp : verifyOtp}
-        className="card w-full max-w-sm space-y-5 p-8"
-      >
+      <form onSubmit={handleSubmit} className="card w-full max-w-sm space-y-5 p-8">
         <p className="text-xs font-semibold uppercase tracking-[0.28em]" style={{ color: 'var(--gold)' }}>
           Log in
         </p>
-        <h1 className="font-display text-2xl font-medium">
-          {step === 'email' ? 'Enter your email' : 'Enter the OTP'}
-        </h1>
+        <h1 className="font-display text-2xl font-medium">Welcome back</h1>
 
-        {step === 'email' ? (
-          <input
-            required
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-            className="field-input"
-          />
-        ) : (
-          <input
-            required
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-            placeholder="6-digit code"
-            className="field-input"
-          />
-        )}
-
-        {devOtp && step === 'otp' && (
-          <p
-            className="rounded-lg px-3 py-2.5 text-xs"
-            style={{ background: 'rgba(168, 117, 44, 0.08)', color: 'var(--gold-deep)' }}
-          >
-            Email isn't wired up yet — your test OTP is <strong>{devOtp}</strong>.
-          </p>
-        )}
+        <input
+          required
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="you@example.com"
+          className="field-input"
+        />
+        <input
+          required
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+          className="field-input"
+        />
 
         {error && <p className="text-sm" style={{ color: 'var(--maroon)' }}>{error}</p>}
 
         <button type="submit" disabled={loading} className="btn-primary w-full">
-          {loading
-            ? 'Please wait…'
-            : step === 'email'
-            ? 'Send OTP'
-            : 'Verify & log in'}
+          {loading ? 'Signing in…' : 'Log in'}
         </button>
+
+        <Link
+          href="/login/forgot-password"
+          className="block text-center text-xs underline"
+          style={{ color: 'var(--ink-40)' }}
+        >
+          Forgot password?
+        </Link>
       </form>
     </main>
   );

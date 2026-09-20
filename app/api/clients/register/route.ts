@@ -3,6 +3,7 @@ import { db } from '@/lib/db';
 import { randomInt } from 'crypto';
 import { TIER_AMOUNTS } from '@/lib/razorpay';
 import { verifyEmailVerificationToken } from '@/lib/email-verification';
+import { getSupabaseAdmin } from '@/lib/supabase';
 
 function isValidUrl(value: unknown): value is string {
   if (typeof value !== 'string') return false;
@@ -28,6 +29,8 @@ export async function POST(request: Request) {
       name,
       gender,
       email,
+      password,
+      confirmPassword,
       phoneNumber,
       companionId,
       bookingDate,
@@ -43,6 +46,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
+    if (!password || password.length < 8) {
+      return NextResponse.json({ error: 'Password must be at least 8 characters' }, { status: 400 });
+    }
+    if (password !== confirmPassword) {
+      return NextResponse.json({ error: 'Passwords do not match' }, { status: 400 });
+    }
+
     const emailVerification = await verifyEmailVerificationToken(emailVerificationToken, email);
     if (!emailVerification.valid) {
       return NextResponse.json(
@@ -51,6 +61,19 @@ export async function POST(request: Request) {
       );
     }
     const authUserId = emailVerification.authUserId;
+
+    if (authUserId) {
+      const { error: pwError } = await getSupabaseAdmin().auth.admin.updateUserById(authUserId, {
+        password,
+      });
+      if (pwError) {
+        console.error('client registration: could not set password', pwError);
+        return NextResponse.json(
+          { error: 'Could not set your password. Try again.' },
+          { status: 500 }
+        );
+      }
+    }
 
     if (!/^\d{10}$/.test(String(phoneNumber))) {
       return NextResponse.json(

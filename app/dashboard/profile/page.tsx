@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 const TIER_LABEL: Record<string, string> = {
-  gold: 'Gold — ₹999 / 2hr',
-  silver: 'Silver — ₹1,499 / 4hr',
-  diamond: 'Diamond — ₹1,999 / full night',
+  gold: 'Gold · ₹999 / 2hr',
+  silver: 'Silver · ₹1,499 / 4hr',
+  diamond: 'Diamond · ₹1,999 / full night',
 };
 
 export default function CompanionProfilePage() {
@@ -81,7 +81,7 @@ export default function CompanionProfilePage() {
     return (
       <main className="flex min-h-screen items-center justify-center px-6 text-center" style={{ background: 'var(--paper)' }}>
         <p style={{ color: 'var(--ink-60)' }}>
-          {error} —{' '}
+          {error}.{' '}
           <Link href="/login" className="underline" style={{ color: 'var(--gold-deep)' }}>
             log in
           </Link>
@@ -151,7 +151,7 @@ export default function CompanionProfilePage() {
                 value={profilePhotoUrl}
                 onChange={(e) => setProfilePhotoUrl(e.target.value)}
                 className="field-input"
-                placeholder="A clear, public photo — shown to clients"
+                placeholder="A clear, public photo, shown to clients"
               />
             </label>
 

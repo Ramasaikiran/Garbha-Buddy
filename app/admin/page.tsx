@@ -109,7 +109,7 @@ export default function AdminPage() {
             {pending.length === 0 && <p style={{ color: 'var(--ink-40)' }}>Nothing to review.</p>}
             {pending.map((c) => (
               <div key={c.id} className="card p-5">
-                <p className="font-medium">{c.name} — {c.city}</p>
+                <p className="font-medium">{c.name} · {c.city}</p>
                 <p className="text-sm" style={{ color: 'var(--ink-40)' }}>{c.phone_number} · {c.tier}</p>
                 <a
                   href={c.video_proof_url}

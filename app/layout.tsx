@@ -26,7 +26,7 @@ export const viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Garba Buddy — Book a Verified Garba Dance Companion This Navratri',
+    default: 'Garba Buddy: Book a Verified Garba Dance Companion This Navratri',
     template: '%s | Garba Buddy',
   },
   description:
@@ -53,14 +53,14 @@ export const metadata: Metadata = {
     locale: 'en_IN',
     url: SITE_URL,
     siteName: 'Garba Buddy',
-    title: 'Garba Buddy — Never Garba Alone',
+    title: 'Garba Buddy: Never Garba Alone',
     description:
       'Book a verified, ID-checked local dance companion for Navratri. Safe, chaperoned, no awkward solo standing on the sidelines.',
-    images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'Garba Buddy — book a verified Navratri dance companion' }],
+    images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'Garba Buddy: book a verified Navratri dance companion' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Garba Buddy — Never Garba Alone',
+    title: 'Garba Buddy: Never Garba Alone',
     description: 'Book a verified local Garba dance companion this Navratri.',
     images: ['/og-image.jpg'],
   },

@@ -14,9 +14,9 @@ const CITIES = [
   'Mysuru', 'Dehradun', 'Noida', 'Gurugram', 'Gandhinagar', 'Anand', 'Bhavnagar', 'Jamnagar',
 ];
 const TIERS = [
-  { value: 'gold', label: 'Gold — ₹999 / 2hr' },
-  { value: 'silver', label: 'Silver — ₹1,499 / 4hr' },
-  { value: 'diamond', label: 'Diamond — ₹1,999 / full night' },
+  { value: 'gold', label: 'Gold · ₹999 / 2hr' },
+  { value: 'silver', label: 'Silver · ₹1,499 / 4hr' },
+  { value: 'diamond', label: 'Diamond · ₹1,999 / full night' },
 ];
 const STEP_LABELS = ['Basics', 'Dance & pricing', 'Verify identity'];
 
@@ -313,7 +313,7 @@ export default function CompanionRegisterPage() {
                       </div>
                       {emailDevOtp && (
                         <p className="text-xs" style={{ color: 'var(--gold-deep)' }}>
-                          Email not connected yet — your test code is <strong>{emailDevOtp}</strong>.
+                          Email not connected yet. Your test code is <strong>{emailDevOtp}</strong>.
                         </p>
                       )}
                       <button
@@ -456,7 +456,7 @@ export default function CompanionRegisterPage() {
               {step === 2 && (
                 <div className="rounded-xl p-5" style={{ background: 'var(--paper)', border: '1px solid var(--line)' }}>
                   <p className="mb-4 text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--gold)' }}>
-                    Kept private — used only for on-site matching
+                    Kept private, used only for on-site matching
                   </p>
                   <div className="space-y-4">
                     <Field label="Aadhaar front (upload link)">

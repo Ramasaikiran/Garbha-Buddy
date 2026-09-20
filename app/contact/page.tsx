@@ -11,7 +11,7 @@ export default function ContactPage() {
         </p>
         <h1 className="font-display mt-3 text-4xl font-medium">Contact us</h1>
         <p className="mt-3 text-sm leading-relaxed" style={{ color: 'var(--ink-60)' }}>
-          For bookings, refunds, safety concerns, or anything else — call,
+          For bookings, refunds, safety concerns, or anything else, call,
           WhatsApp, or email us directly.
         </p>
 

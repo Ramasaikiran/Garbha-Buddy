@@ -89,7 +89,7 @@ export async function POST(
     refundSucceeded,
     message: refundSucceeded
       ? 'Reported. Booking cancelled and you\u2019ve been fully refunded.'
-      : `Reported. Booking cancelled — refund could not be processed automatically, our team will follow up.${
+      : `Reported. Booking cancelled. Refund could not be processed automatically, our team will follow up.${
           refundError ? ` (${refundError})` : ''
         }`,
   });

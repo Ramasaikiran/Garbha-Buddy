@@ -71,7 +71,7 @@ export async function POST(
       refundStatus === 'refunded'
         ? 'Reported. Booking cancelled and refund issued.'
         : refundStatus === 'refund_failed'
-        ? 'Reported. Booking cancelled — refund could not be processed automatically, our team will follow up.'
+        ? 'Reported. Booking cancelled. Refund could not be processed automatically, our team will follow up.'
         : 'Reported. Booking cancelled.',
     refundStatus,
   });

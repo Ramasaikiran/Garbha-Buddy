@@ -113,7 +113,7 @@ export default function DashboardPage() {
         style={{ background: 'var(--paper)' }}
       >
         <p style={{ color: 'var(--ink-60)' }}>
-          {error} —{' '}
+          {error}.{' '}
           <Link href="/login" className="underline" style={{ color: 'var(--gold-deep)' }}>
             log in
           </Link>
@@ -171,7 +171,7 @@ export default function DashboardPage() {
               Your profile link
             </p>
             <p className="text-sm" style={{ color: 'var(--ink-60)' }}>
-              Share this with friends, family, or on social media — anyone who opens it can book you directly.
+              Share this with friends, family, or on social media. Anyone who opens it can book you directly.
             </p>
             <div className="mt-3 flex flex-wrap items-center gap-2">
               <code

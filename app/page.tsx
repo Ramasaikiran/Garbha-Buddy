@@ -49,7 +49,7 @@ const STEPS = [
 const FAQS = [
   {
     q: 'Does Garba Buddy sell event tickets?',
-    a: "No. We handle the companion booking. Venue entry — that's between you and them.",
+    a: "No. We handle the companion booking. Venue entry is separate, that's between you and them.",
   },
   {
     q: 'How are companions verified?',
@@ -156,7 +156,7 @@ export default function HomePage() {
         >
           <p>Book a verified local Garba companion.</p>
           <p>ID-checked. Face-matched. Paid safely.</p>
-          <p style={{ color: 'var(--ink)', fontWeight: 600 }}>Just someone to dance with — nothing else.</p>
+          <p style={{ color: 'var(--ink)', fontWeight: 600 }}>Just someone to dance with, nothing else.</p>
         </div>
 
         <div
@@ -300,7 +300,7 @@ export default function HomePage() {
           <div className="mt-14 grid gap-10 sm:grid-cols-3">
             {[
               [ShieldIcon, 'ID-verified', 'Aadhaar checked. Selfie checked. Before anyone goes live.'],
-              [MatchIcon, 'Face-matched', "See them. Match them. Or walk away — you're covered."],
+              [MatchIcon, 'Face-matched', "See them. Match them. Or walk away, you're covered."],
               [LockIcon, 'Held in escrow', 'We hold the money. Until the dance actually happens.'],
             ].map(([Icon, title, body]: any) => (
               <div key={title}>

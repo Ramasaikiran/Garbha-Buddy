@@ -1,9 +1,9 @@
 import { ArrowIcon } from '@/components/icons';
 
 const TIER_LABEL: Record<string, string> = {
-  gold: 'Gold — ₹999',
-  silver: 'Silver — ₹1,499',
-  diamond: 'Diamond — ₹1,999',
+  gold: 'Gold · ₹999',
+  silver: 'Silver · ₹1,499',
+  diamond: 'Diamond · ₹1,999',
 };
 
 export default function CompanionCard({

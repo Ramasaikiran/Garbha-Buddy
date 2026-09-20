@@ -17,10 +17,10 @@ export default function PrivacyPage() {
             <h2 className="font-display text-xl font-medium" style={{ color: 'var(--ink)' }}>1. What we collect</h2>
             <ul className="mt-2 list-disc space-y-1.5 pl-5">
               <li>Name, gender, and phone number</li>
-              <li>Aadhaar front and back images, and the last 4 digits only — never the full number</li>
+              <li>Aadhaar front and back images, and the last 4 digits only, never the full number</li>
               <li>A selfie, used to confirm identity in person at check-in</li>
               <li>For companions: a dance proof video, city, tier, and availability</li>
-              <li>Booking details — dates, amounts, and status</li>
+              <li>Booking details: dates, amounts, and status</li>
               <li>Messages exchanged in the in-app coordination chat, visible only to the two people on that booking</li>
             </ul>
           </section>
@@ -50,7 +50,7 @@ export default function PrivacyPage() {
             <h2 className="font-display text-xl font-medium" style={{ color: 'var(--ink)' }}>4. Payments</h2>
             <p className="mt-2">
               Payments are processed by Razorpay. We do not store your card
-              or bank account details — that information is handled entirely
+              or bank account details. That information is handled entirely
               by Razorpay's systems.
             </p>
           </section>

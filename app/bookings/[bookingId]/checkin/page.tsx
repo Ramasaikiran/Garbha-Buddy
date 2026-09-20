@@ -26,7 +26,7 @@ export default function CheckinPage({ params }: { params: { bookingId: string } 
         }
         setBooking(data.booking);
       })
-      .catch(() => setLoadError('Network error — try again.'));
+      .catch(() => setLoadError('Network error. Try again.'));
   }, [params.bookingId]);
 
   async function confirmMatch() {

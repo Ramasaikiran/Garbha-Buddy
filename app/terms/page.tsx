@@ -18,7 +18,7 @@ export default function TermsPage() {
             <p className="mt-2">
               Garba Buddy connects solo Navratri attendees ("clients") with
               verified local dance companions ("companions") for paid,
-              time-boxed bookings. We are a booking and matching platform —
+              time-boxed bookings. We are a booking and matching platform;
               we are not an event organizer and do not sell venue tickets.
             </p>
           </section>
@@ -82,7 +82,7 @@ export default function TermsPage() {
             <h2 className="font-display text-xl font-medium" style={{ color: 'var(--ink)' }}>7. Prohibited use</h2>
             <p className="mt-2">
               The platform may not be used for any purpose other than booking
-              a dance companion for Navratri events — including, without
+              a dance companion for Navratri events, including, without
               limitation, solicitation of any other services.
             </p>
           </section>

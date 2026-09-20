@@ -72,7 +72,7 @@ export async function POST(
     refundSucceeded,
     message: refundSucceeded
       ? `Booking cancelled. ₹${refundAmount} (${Math.round(refundPct * 100)}%) refunded.`
-      : `Booking cancelled. Refund of ₹${refundAmount} could not be processed automatically — our team will follow up.${
+      : `Booking cancelled. Refund of ₹${refundAmount} could not be processed automatically. Our team will follow up.${
           refundError ? ` (${refundError})` : ''
         }`,
   });

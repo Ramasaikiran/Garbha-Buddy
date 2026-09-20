@@ -40,7 +40,7 @@ export default function RefundPolicyPage() {
               <li>
                 <strong style={{ color: 'var(--ink)' }}>Companion no-show.</strong> If your
                 companion doesn't arrive and doesn't respond in the in-app chat,
-                report it from your booking — you're refunded the full amount
+                report it from your booking, and you're refunded the full amount
                 immediately, and the companion is charged a 30% penalty.
               </li>
               <li>
@@ -65,10 +65,10 @@ export default function RefundPolicyPage() {
               What isn't refundable
             </h2>
             <ul className="mt-2 list-disc space-y-2 pl-5">
-              <li>Venue entry tickets — Garba Buddy never sells or holds these funds.</li>
+              <li>Venue entry tickets. Garba Buddy never sells or holds these funds.</li>
               <li>
                 A completed booking (checked in via OTP) where the companion
-                attended as booked — the service was delivered.
+                attended as booked, the service was delivered.
               </li>
               <li>Amounts already paid out to a companion for a completed, undisputed booking.</li>
             </ul>

@@ -28,7 +28,7 @@ export default function AdminLoginPage() {
       }
       router.push('/admin');
     } catch {
-      setError('Network error — try again.');
+      setError('Network error. Try again.');
     } finally {
       setLoading(false);
     }

@@ -28,7 +28,7 @@ export default function LoginPage() {
       }
       router.push('/dashboard');
     } catch {
-      setError('Network error — check your connection and try again.');
+      setError('Network error. Check your connection and try again.');
     } finally {
       setLoading(false);
     }

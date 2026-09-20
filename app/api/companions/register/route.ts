@@ -117,7 +117,7 @@ export async function POST(request: Request) {
       }
       if (!isValidUrl(value)) {
         return NextResponse.json(
-          { error: `${label} must be a link starting with http:// or https:// — not plain text` },
+          { error: `${label} must be a link starting with http:// or https://, not plain text` },
           { status: 400 }
         );
       }

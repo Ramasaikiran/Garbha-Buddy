@@ -3,9 +3,9 @@ import { notFound } from 'next/navigation';
 import BookButton from './book-button';
 
 const TIER_LABEL: Record<string, string> = {
-  gold: 'Gold — ₹999 / 2hr',
-  silver: 'Silver — ₹1,499 / 4hr',
-  diamond: 'Diamond — ₹1,999 / full night',
+  gold: 'Gold · ₹999 / 2hr',
+  silver: 'Silver · ₹1,499 / 4hr',
+  diamond: 'Diamond · ₹1,999 / full night',
 };
 
 async function getCompanion(slug: string) {

@@ -143,7 +143,7 @@ function ClientRegisterForm() {
 
   async function payForBooking(bookingId: string) {
     if (!(window as any).Razorpay) {
-      throw new Error('Payment is still loading — try again in a moment.');
+      throw new Error('Payment is still loading. Try again in a moment.');
     }
 
     const orderRes = await fetch('/api/bookings/create-order', {
@@ -291,8 +291,8 @@ function ClientRegisterForm() {
                   style={{ background: 'rgba(122, 36, 56, 0.06)', color: 'var(--maroon)' }}
                 >
                   <AlertIcon className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                  {companionName} only accepts female clients. Payment is disabled —
-                  try another companion on the browse page.
+                  {companionName} only accepts female clients. Payment is disabled.
+                  Try another companion on the browse page.
                 </p>
               )}
 
@@ -351,7 +351,7 @@ function ClientRegisterForm() {
                   </div>
                   {emailDevOtp && (
                     <p className="text-xs" style={{ color: 'var(--gold-deep)' }}>
-                      Email not connected yet — your test code is <strong>{emailDevOtp}</strong>.
+                      Email not connected yet. Your test code is <strong>{emailDevOtp}</strong>.
                     </p>
                   )}
                   <button
@@ -406,7 +406,7 @@ function ClientRegisterForm() {
             <>
               <div className="rounded-xl p-5" style={{ background: 'var(--paper)', border: '1px solid var(--line)' }}>
                 <p className="mb-4 text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--gold)' }}>
-                  Kept private — used only for on-site matching
+                  Kept private, used only for on-site matching
                 </p>
                 <div className="space-y-4">
                   <Field label="Aadhaar front (upload link)">
@@ -460,7 +460,7 @@ function ClientRegisterForm() {
                     className="mt-0.5"
                   />
                   <span>
-                    This payment covers the companion's fee only — not your Garba
+                    This payment covers the companion's fee only, not your Garba
                     venue entry ticket. Garba Buddy is not responsible for venue
                     passes; ticket arrangements are between me and my companion.
                   </span>

@@ -14,9 +14,9 @@ export default function AboutPage() {
         <div className="mt-8 space-y-6 text-sm leading-relaxed" style={{ color: 'var(--ink-60)' }}>
           <p>
             Garba Buddy is a Navratri dance-companion booking platform. We
-            connect solo attendees — people new to a city, without a regular
+            connect solo attendees, people new to a city, without a regular
             dance circle, or simply looking for a safe companion for the
-            night — with verified local Garba and Dandiya dancers who want to
+            night, with verified local Garba and Dandiya dancers who want to
             earn from a skill they already have.
           </p>
           <p>
@@ -27,7 +27,7 @@ export default function AboutPage() {
             companion has shown up before the booking is marked complete.
           </p>
           <p>
-            We handle only the companion's booking fee — never venue entry
+            We handle only the companion's booking fee, never venue entry
             tickets, which are arranged directly between the attendee and
             their companion. Payments are held in escrow via Razorpay and
             released to the companion once the booking is confirmed
@@ -40,7 +40,7 @@ export default function AboutPage() {
         </div>
 
         <p className="mt-10 text-sm" style={{ color: 'var(--ink-40)' }}>
-          Questions or partnership enquiries — see our{' '}
+          Questions or partnership enquiries? See our{' '}
           <Link href="/contact" className="underline" style={{ color: 'var(--gold-deep)' }}>
             Contact page
           </Link>

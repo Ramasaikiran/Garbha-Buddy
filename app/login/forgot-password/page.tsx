@@ -87,7 +87,7 @@ export default function ForgotPasswordPage() {
             <input
               required
               value={otp}
-              onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 8))}
+              onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
               placeholder="Code from your email"
               className="field-input"
             />

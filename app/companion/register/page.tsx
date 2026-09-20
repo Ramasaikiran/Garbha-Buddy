@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { CheckIcon } from '@/components/icons';
 
 const CITIES = [
@@ -206,10 +207,11 @@ export default function CompanionRegisterPage() {
         {result ? (
           <div className="card p-8 text-center">
             <CheckIcon className="mx-auto h-8 w-8" style={{ color: 'var(--gold)' }} />
-            <h2 className="font-display mt-4 text-2xl font-medium">You're live</h2>
+            <h2 className="font-display mt-4 text-2xl font-medium">Registration submitted</h2>
             <p className="mt-2 text-sm" style={{ color: 'var(--ink-60)' }}>
-              Share this link on Instagram, WhatsApp status, or your bio.
-              Anyone who books through it comes straight to you.
+              Our team reviews your ID and video within 24 hours. Once
+              approved, this link goes live and anyone who books through it
+              comes straight to you:
             </p>
             <div
               className="mt-6 flex items-center gap-2 rounded-xl p-3"
@@ -222,6 +224,13 @@ export default function CompanionRegisterPage() {
                 {copied ? 'Copied' : 'Copy'}
               </button>
             </div>
+            <p className="mt-6 text-sm" style={{ color: 'var(--ink-40)' }}>
+              Coming back later? Log in anytime at{' '}
+              <Link href="/login" className="underline" style={{ color: 'var(--gold-deep)' }}>
+                garbabuddy.lol/login
+              </Link>{' '}
+              with this email to check your status and bookings.
+            </p>
           </div>
         ) : (
           <div className="card p-6 sm:p-8">

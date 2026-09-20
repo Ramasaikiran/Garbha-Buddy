@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import CompanionCard from '@/components/CompanionCard';
 
 const CITIES = [
@@ -30,6 +31,15 @@ export default function BrowsePage() {
   return (
     <main style={{ background: 'var(--paper)' }} className="min-h-screen px-6 py-16">
       <div className="mx-auto max-w-4xl">
+        <div className="mb-6 flex items-center justify-between">
+          <Link href="/" className="font-display text-lg font-semibold" style={{ color: 'var(--ink)' }}>
+            Garba Buddy
+          </Link>
+          <Link href="/login" className="text-sm font-medium underline" style={{ color: 'var(--gold-deep)' }}>
+            Log in
+          </Link>
+        </div>
+
         <p className="text-xs font-semibold uppercase tracking-[0.28em]" style={{ color: 'var(--gold)' }}>
           Browse
         </p>

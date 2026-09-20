@@ -104,17 +104,28 @@ export default function HomePage() {
             Find a companion
           </Link>
         </nav>
-        <Link href="/browse" className="btn-primary !px-4 !py-2 !text-sm sm:hidden">
-          Book
-        </Link>
+        <div className="flex items-center gap-3 sm:hidden">
+          <Link href="/login" className="text-sm font-medium" style={{ color: 'var(--ink)' }}>
+            Log in
+          </Link>
+          <Link href="/browse" className="btn-primary !px-4 !py-2 !text-sm">
+            Book
+          </Link>
+        </div>
       </header>
 
       {/* Mobile sticky bottom CTA */}
       <div
-        className="fixed inset-x-0 bottom-0 z-20 border-t p-3 sm:hidden"
+        className="fixed inset-x-0 bottom-0 z-20 flex items-center gap-2 border-t p-3 sm:hidden"
         style={{ background: 'var(--surface)', borderColor: 'var(--line)' }}
       >
-        <Link href="/browse" className="btn-primary block w-full text-center">
+        <Link
+          href="/login"
+          className="btn-secondary shrink-0 !px-4 text-center"
+        >
+          Log in
+        </Link>
+        <Link href="/browse" className="btn-primary flex-1 text-center">
           Find a companion
         </Link>
       </div>
@@ -132,22 +143,38 @@ export default function HomePage() {
           className="reveal font-display mt-5 text-5xl font-medium leading-[1.08] sm:text-6xl"
           style={{ animationDelay: '90ms' }}
         >
-          Everyone has
+          New in the city?
           <br />
-          a dance partner.
+          Don't know anyone
           <br />
-          <span style={{ color: 'var(--gold)' }}>You don't.</span>
-          <br />
-          Yet.
+          to dance <span style={{ color: 'var(--gold)' }}>Garba</span> with?
         </h1>
 
         <div
           className="reveal mx-auto mt-8 max-w-md space-y-1 text-lg leading-snug"
           style={{ color: 'var(--ink-60)', animationDelay: '170ms' }}
         >
-          <p>Book a verified Garba dance companion.</p>
+          <p>Book a verified local Garba companion.</p>
           <p>ID-checked. Face-matched. Paid safely.</p>
-          <p style={{ color: 'var(--ink)', fontWeight: 600 }}>Show up. Dance. That's it.</p>
+          <p style={{ color: 'var(--ink)', fontWeight: 600 }}>Just someone to dance with — nothing else.</p>
+        </div>
+
+        <div
+          className="reveal mx-auto mt-8 flex max-w-md flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-medium"
+          style={{ color: 'var(--ink-60)', animationDelay: '210ms' }}
+        >
+          <span className="flex items-center gap-1.5">
+            <ShieldIcon className="h-3.5 w-3.5" style={{ color: 'var(--gold)' }} />
+            ID-verified
+          </span>
+          <span className="flex items-center gap-1.5">
+            <MatchIcon className="h-3.5 w-3.5" style={{ color: 'var(--gold)' }} />
+            Face-matched at the gate
+          </span>
+          <span className="flex items-center gap-1.5">
+            <LockIcon className="h-3.5 w-3.5" style={{ color: 'var(--gold)' }} />
+            Money held in escrow
+          </span>
         </div>
 
         <div
@@ -180,39 +207,21 @@ export default function HomePage() {
         </p>
       </section>
 
-      {/* TRUST STRIP */}
-      <section className="border-y" style={{ borderColor: 'var(--line)', background: 'var(--surface)' }}>
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-10 gap-y-3 px-6 py-6 text-center text-xs font-medium" style={{ color: 'var(--ink-60)' }}>
-          <span className="flex items-center gap-1.5">
-            <ShieldIcon className="h-3.5 w-3.5" style={{ color: 'var(--gold)' }} />
-            ID-verified companions
-          </span>
-          <span className="flex items-center gap-1.5">
-            <MatchIcon className="h-3.5 w-3.5" style={{ color: 'var(--gold)' }} />
-            Face-matched at the gate
-          </span>
-          <span className="flex items-center gap-1.5">
-            <LockIcon className="h-3.5 w-3.5" style={{ color: 'var(--gold)' }} />
-            Payments held in escrow
-          </span>
-        </div>
-      </section>
-
       {/* THE PROBLEM */}
       <section className="border-t" style={{ borderColor: 'var(--line)' }}>
         <div className="mx-auto max-w-2xl px-6 py-24 text-center">
           <h2 className="font-display text-3xl font-medium leading-tight sm:text-4xl">
-            The Navratri problem
+            You moved for work.
             <br />
-            nobody talks about.
+            Your dance circle didn't.
           </h2>
           <div className="mx-auto mt-6 max-w-sm space-y-1 text-base leading-snug" style={{ color: 'var(--ink-60)' }}>
-            <p>You want to dance.</p>
-            <p>Everyone's already paired up.</p>
-            <p>You're by the snacks. Again.</p>
+            <p>Your college friends are three cities away.</p>
+            <p>You barely know your neighbors, let alone a Garba partner.</p>
+            <p>Navratri's here anyway.</p>
           </div>
           <p className="font-display mt-6 text-2xl font-medium" style={{ color: 'var(--gold)' }}>
-            Not this year.
+            You shouldn't have to skip it.
           </p>
         </div>
       </section>

@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import Script from 'next/script';
 import { CheckIcon, AlertIcon, LockIcon } from '@/components/icons';
 
@@ -222,8 +223,12 @@ function ClientRegisterForm() {
           <CheckIcon className="mx-auto h-9 w-9" style={{ color: 'var(--gold)' }} />
           <h1 className="font-display mt-4 text-2xl font-medium">You're booked in</h1>
           <p className="mt-2 text-sm" style={{ color: 'var(--ink-60)' }}>
-            You'll get your OTP and payment confirmation on WhatsApp shortly.
+            Your companion's check-in OTP and booking details are in your
+            dashboard once you log in.
           </p>
+          <Link href="/login" className="btn-primary mt-6 inline-block !px-6">
+            Log in to see your booking
+          </Link>
         </div>
       </main>
     );

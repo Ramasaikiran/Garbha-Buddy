@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState('');
@@ -67,6 +68,14 @@ export default function AdminLoginPage() {
         <button type="submit" disabled={loading} className="btn-primary w-full">
           {loading ? 'Signing in…' : 'Sign in'}
         </button>
+
+        <Link
+          href="/admin/forgot-password"
+          className="block text-center text-xs underline"
+          style={{ color: 'var(--ink-40)' }}
+        >
+          Forgot password?
+        </Link>
       </form>
     </main>
   );

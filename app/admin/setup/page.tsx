@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import PasswordInput from '@/components/PasswordInput';
 
 export default function AdminSetupPage() {
   const [secret, setSecret] = useState('');
@@ -49,13 +50,11 @@ export default function AdminSetupPage() {
           and password you set here.
         </p>
 
-        <input
+        <PasswordInput
           required
-          type="password"
           value={secret}
-          onChange={(e) => setSecret(e.target.value)}
+          onChange={setSecret}
           placeholder="ADMIN_SECRET (from Vercel env vars)"
-          className="field-input"
         />
         <input
           required
@@ -65,14 +64,12 @@ export default function AdminSetupPage() {
           placeholder="Your admin email"
           className="field-input"
         />
-        <input
+        <PasswordInput
           required
-          type="password"
           minLength={8}
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={setPassword}
           placeholder="Choose a password (min 8 chars)"
-          className="field-input"
         />
 
         {error && <p className="text-sm" style={{ color: 'var(--maroon)' }}>{error}</p>}

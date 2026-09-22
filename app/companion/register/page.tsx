@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { CheckIcon } from '@/components/icons';
+import PasswordInput from '@/components/PasswordInput';
 
 const CITIES = [
   'Mumbai', 'Delhi NCR', 'Bengaluru', 'Hyderabad', 'Ahmedabad', 'Chennai', 'Kolkata', 'Pune',
@@ -137,9 +138,26 @@ export default function CompanionRegisterPage() {
     return true;
   }
 
+  function stepError(s: number): string {
+    if (s === 0) {
+      if (!form.name || !form.gender) return 'Fill in your name and gender.';
+      if (form.phoneNumber.length !== 10) return 'Phone number must be exactly 10 digits.';
+      if (!form.email) return 'Enter your email.';
+      if (emailOtpStatus !== 'verified') return 'Verify your email with the code we sent.';
+      if (form.password.length < 8) return 'Password must be at least 8 characters.';
+      if (form.password !== form.confirmPassword) return "Passwords don't match.";
+    }
+    if (s === 1 && !form.videoProofUrl) return 'Add a dance proof video link.';
+    if (s === 2) {
+      if (!form.aadhaarFrontUrl || !form.aadhaarBackUrl) return 'Add both Aadhaar front and back links.';
+      if (!form.selfieUrl) return 'Add a selfie link.';
+    }
+    return 'Fill in the required fields to continue.';
+  }
+
   function next() {
     if (!stepValid(step)) {
-      setError('Fill in the required fields to continue.');
+      setError(stepError(step));
       return;
     }
     setError('');
@@ -154,7 +172,7 @@ export default function CompanionRegisterPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!stepValid(2)) {
-      setError('Fill in the required fields to continue.');
+      setError(stepError(2));
       return;
     }
     setStatus('submitting');
@@ -339,23 +357,19 @@ export default function CompanionRegisterPage() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <Field label="Password">
-                      <input
+                      <PasswordInput
                         required
-                        type="password"
                         minLength={8}
                         value={form.password}
-                        onChange={(e) => update('password', e.target.value)}
-                        className="field-input"
+                        onChange={(v) => update('password', v)}
                         placeholder="Min 8 characters"
                       />
                     </Field>
                     <Field label="Confirm password">
-                      <input
+                      <PasswordInput
                         required
-                        type="password"
                         value={form.confirmPassword}
-                        onChange={(e) => update('confirmPassword', e.target.value)}
-                        className="field-input"
+                        onChange={(v) => update('confirmPassword', v)}
                         placeholder="Re-enter password"
                       />
                     </Field>

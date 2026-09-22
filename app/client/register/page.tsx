@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Script from 'next/script';
 import { CheckIcon, AlertIcon, LockIcon } from '@/components/icons';
+import PasswordInput from '@/components/PasswordInput';
 
 export default function ClientRegisterPage() {
   return (
@@ -128,13 +129,23 @@ function ClientRegisterForm() {
     );
   }
 
+  function stepOneError(): string {
+    if (!form.name || !form.gender) return 'Fill in your name and gender.';
+    if (form.phoneNumber.length !== 10) return 'Phone number must be exactly 10 digits.';
+    if (!form.email) return 'Enter your email.';
+    if (emailOtpStatus !== 'verified') return 'Verify your email with the code we sent.';
+    if (form.password.length < 8) return 'Password must be at least 8 characters.';
+    if (form.password !== form.confirmPassword) return "Passwords don't match.";
+    return 'Fill in the required fields to continue.';
+  }
+
   function next() {
     if (genderBlocked) {
       setError(`${companionName} only accepts female clients.`);
       return;
     }
     if (!stepOneValid()) {
-      setError('Fill in the required fields to continue.');
+      setError(stepOneError());
       return;
     }
     setError('');
@@ -376,23 +387,19 @@ function ClientRegisterForm() {
               {emailOtpError && <p className="text-xs" style={{ color: 'var(--maroon)' }}>{emailOtpError}</p>}
 
               <Field label="Password">
-                <input
+                <PasswordInput
                   required
-                  type="password"
                   minLength={8}
                   value={form.password}
-                  onChange={(e) => update('password', e.target.value)}
-                  className="field-input"
+                  onChange={(v) => update('password', v)}
                   placeholder="Min 8 characters"
                 />
               </Field>
               <Field label="Confirm password">
-                <input
+                <PasswordInput
                   required
-                  type="password"
                   value={form.confirmPassword}
-                  onChange={(e) => update('confirmPassword', e.target.value)}
-                  className="field-input"
+                  onChange={(v) => update('confirmPassword', v)}
                   placeholder="Re-enter password"
                 />
               </Field>

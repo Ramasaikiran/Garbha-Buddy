@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import PasswordInput from '@/components/PasswordInput';
 
 export default function AdminForgotPasswordPage() {
   const [step, setStep] = useState<'email' | 'reset'>('email');
@@ -91,13 +92,12 @@ export default function AdminForgotPasswordPage() {
               placeholder="Code from your email"
               className="field-input"
             />
-            <input
-              type="password"
+            <PasswordInput
               required
+              minLength={8}
               value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
+              onChange={setNewPassword}
               placeholder="New password (min 8 characters)"
-              className="field-input"
             />
           </>
         )}

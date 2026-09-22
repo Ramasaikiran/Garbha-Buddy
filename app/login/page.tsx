@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import PasswordInput from '@/components/PasswordInput';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -53,13 +54,11 @@ export default function LoginPage() {
           placeholder="you@example.com"
           className="field-input"
         />
-        <input
+        <PasswordInput
           required
-          type="password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={setPassword}
           placeholder="Password"
-          className="field-input"
         />
 
         {error && <p className="text-sm" style={{ color: 'var(--maroon)' }}>{error}</p>}

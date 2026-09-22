@@ -5,6 +5,6 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       { userAgent: '*', allow: '/', disallow: ['/admin', '/dashboard', '/bookings'] },
     ],
-    sitemap: 'https://www.garbabuddy.lol/sitemap.xml',
+    sitemap: 'https://garbabuddy.lol/sitemap.xml',
   };
 }

@@ -17,7 +17,7 @@ const manrope = Manrope({
   display: 'swap',
 });
 
-const SITE_URL = 'https://www.garbabuddy.lol';
+const SITE_URL = 'https://garbabuddy.lol';
 
 export const viewport = {
   themeColor: '#150826',

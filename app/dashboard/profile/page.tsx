@@ -73,7 +73,7 @@ export default function CompanionProfilePage() {
   }
 
   function shareToWhatsApp() {
-    const text = encodeURIComponent(`Book me for Garba this Navratri! ${shareUrl}`);
+    const text = encodeURIComponent(`Book a Garba dance slot with me this Navratri! ${shareUrl}`);
     window.open(`https://wa.me/?text=${text}`, '_blank');
   }
 

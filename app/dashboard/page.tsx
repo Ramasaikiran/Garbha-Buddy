@@ -69,7 +69,7 @@ export default function DashboardPage() {
   }
 
   function shareToWhatsApp() {
-    const text = encodeURIComponent(`Book me for Garba this Navratri! ${shareUrl}`);
+    const text = encodeURIComponent(`Book a Garba dance slot with me this Navratri! ${shareUrl}`);
     window.open(`https://wa.me/?text=${text}`, '_blank');
   }
 
@@ -171,7 +171,7 @@ export default function DashboardPage() {
               Your profile link
             </p>
             <p className="text-sm" style={{ color: 'var(--ink-60)' }}>
-              Share this with friends, family, or on social media. Anyone who opens it can book you directly.
+              Share this with friends, family, or on social media. Anyone who opens it can book a slot with you directly.
             </p>
             <div className="mt-3 flex flex-wrap items-center gap-2">
               <code

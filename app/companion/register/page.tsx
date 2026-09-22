@@ -392,7 +392,7 @@ export default function CompanionRegisterPage() {
                         ))}
                       </select>
                     </Field>
-                    <Field label="Who can book you">
+                    <Field label="Who can book this listing">
                       <select
                         value={form.preference}
                         onChange={(e) => update('preference', e.target.value)}

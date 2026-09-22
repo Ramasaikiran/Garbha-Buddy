@@ -62,7 +62,7 @@ export async function POST(
     );
   }
 
-  // sender is always the authenticated session user — never trust a client-supplied id
+  // sender is always the authenticated session user, never trust a client-supplied id
   await db.query(
     `INSERT INTO booking_messages (booking_id, sender_id, body) VALUES ($1, $2, $3)`,
     [params.bookingId, session.userId, body.trim()]

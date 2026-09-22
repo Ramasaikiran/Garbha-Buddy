@@ -208,7 +208,7 @@ export default function HomePage() {
           className="reveal mt-3 text-xs font-medium"
           style={{ color: 'var(--gold)' }}
         >
-          Spots fill fast closer to Navratri — book early
+          Spots fill fast closer to Navratri, book early
         </p>
 
         <p

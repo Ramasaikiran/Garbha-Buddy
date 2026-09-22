@@ -46,7 +46,7 @@ async function handlePayouts(request: Request) {
       const deduction = Math.min(penalty.amount, payoutRupees);
       payoutRupees -= deduction;
       if (deduction === penalty.amount) settledPenaltyIds.push(penalty.id);
-      // A partially-settled penalty (deduction < amount) is left pending —
+      // A partially-settled penalty (deduction < amount) is left pending:
       // this payout was fully consumed but the penalty isn't fully repaid yet.
       if (deduction < penalty.amount) break;
     }

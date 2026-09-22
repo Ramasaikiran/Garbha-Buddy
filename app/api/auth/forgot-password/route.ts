@@ -9,7 +9,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Email required' }, { status: 400 });
     }
 
-    // Don't reveal whether an account exists — same response either way.
+    // Don't reveal whether an account exists. Same response either way.
     const user = await db.query('SELECT id FROM users WHERE email = $1', [email]);
     if (!user.rows[0]) {
       return NextResponse.json({ success: true });

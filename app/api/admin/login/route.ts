@@ -10,13 +10,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Email and password required' }, { status: 400 });
     }
 
-    // Supabase verifies the credential itself — we never see or store the password.
+    // Supabase verifies the credential itself. We never see or store the password.
     const { data, error } = await getSupabaseAdmin().auth.signInWithPassword({ email, password });
     if (error || !data.user) {
       return NextResponse.json({ error: 'Incorrect email or password' }, { status: 401 });
     }
 
-    // Being a valid Supabase login isn't enough — must also be a designated admin.
+    // Being a valid Supabase login isn't enough. Must also be a designated admin.
     const result = await db.query(
       'SELECT id, email FROM admin_users WHERE auth_user_id = $1 OR email = $2',
       [data.user.id, email]

@@ -9,7 +9,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Email required' }, { status: 400 });
     }
 
-    // Only send a reset if this email is actually a designated admin —
+    // Only send a reset if this email is actually a designated admin.
     // but don't reveal which emails are/aren't admins to a caller.
     const admin = await db.query('SELECT id FROM admin_users WHERE email = $1', [email]);
     if (!admin.rows[0]) {

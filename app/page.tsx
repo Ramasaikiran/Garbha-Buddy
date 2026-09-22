@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Script from 'next/script';
-import { ShieldIcon, MatchIcon, LockIcon, ArrowIcon, DiyaMark } from '@/components/icons';
+import { ShieldIcon, MatchIcon, LockIcon, ArrowIcon } from '@/components/icons';
 
 const TIERS = [
   {
@@ -94,7 +94,8 @@ export default function HomePage() {
         style={{ background: 'rgba(250, 247, 241, 0.85)', backdropFilter: 'blur(8px)' }}
       >
         <div className="flex items-center gap-2.5">
-          <DiyaMark className="h-6 w-6" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-mark.png" alt="Garba Buddy" className="h-8 w-8 object-contain" />
           <span className="font-display text-lg font-semibold">Garba Buddy</span>
         </div>
         <nav className="hidden items-center gap-7 text-sm sm:flex" style={{ color: 'var(--ink-60)' }}>
@@ -390,7 +391,8 @@ export default function HomePage() {
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <DiyaMark className="h-4 w-4" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo-mark.png" alt="Garba Buddy" className="h-5 w-5 object-contain" />
               <span className="text-sm font-medium">Garba Buddy</span>
             </div>
             <nav className="flex flex-wrap gap-6 text-xs" style={{ color: 'var(--ink-60)' }}>

@@ -48,6 +48,10 @@ const STEPS = [
 
 const FAQS = [
   {
+    q: 'How much does it cost?',
+    a: 'Gold ₹999, Silver ₹1,499, Diamond ₹1,999. Venue entry is separate, paid directly to the venue.',
+  },
+  {
     q: 'Does Garba Buddy sell event tickets?',
     a: "No. We handle the companion booking. Venue entry is separate, that's between you and them.",
   },
@@ -186,7 +190,7 @@ export default function HomePage() {
             className="flex items-center justify-between rounded-2xl px-5 py-4 font-semibold transition hover:-translate-y-0.5"
             style={{ background: 'var(--ink)', color: 'var(--paper)' }}
           >
-            <span>A) I need a companion</span>
+            <span>Find my companion →</span>
             <ArrowIcon className="h-4 w-4 shrink-0" />
           </Link>
           <Link
@@ -194,10 +198,17 @@ export default function HomePage() {
             className="flex items-center justify-between rounded-2xl border px-5 py-4 font-semibold transition hover:bg-white/60"
             style={{ borderColor: 'var(--line-strong)', color: 'var(--ink)' }}
           >
-            <span>B) I want to be one</span>
+            <span>Earn as a companion →</span>
             <ArrowIcon className="h-4 w-4 shrink-0" />
           </Link>
         </div>
+
+        <p
+          className="reveal mt-3 text-xs font-medium"
+          style={{ color: 'var(--gold)' }}
+        >
+          Spots fill fast closer to Navratri — book early
+        </p>
 
         <p
           className="reveal mt-10 text-xs tracking-wide"
@@ -355,7 +366,7 @@ export default function HomePage() {
               className="flex items-center justify-between rounded-2xl px-5 py-4 font-semibold transition hover:-translate-y-0.5"
               style={{ background: 'var(--ink)', color: 'var(--paper)' }}
             >
-              <span>A) Find a companion</span>
+              <span>Find my companion →</span>
               <ArrowIcon className="h-4 w-4 shrink-0" />
             </Link>
             <Link
@@ -363,7 +374,7 @@ export default function HomePage() {
               className="flex items-center justify-between rounded-2xl border px-5 py-4 font-semibold transition hover:bg-white/60"
               style={{ borderColor: 'var(--line-strong)', color: 'var(--ink)' }}
             >
-              <span>B) Become a companion</span>
+              <span>Earn as a companion →</span>
               <ArrowIcon className="h-4 w-4 shrink-0" />
             </Link>
           </div>

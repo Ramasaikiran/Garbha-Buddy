@@ -208,7 +208,7 @@ export default function CompanionRegisterPage() {
             <p className="mt-6 text-sm" style={{ color: 'var(--ink-40)' }}>
               Log in anytime at{' '}
               <Link href="/login" className="underline" style={{ color: 'var(--gold-deep)' }}>
-                garbabuddy.lol/login
+                www.garbabuddy.lol/login
               </Link>{' '}
               to check your approval status.
             </p>

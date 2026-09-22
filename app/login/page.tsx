@@ -74,6 +74,12 @@ export default function LoginPage() {
         >
           Forgot password?
         </Link>
+        <p className="text-center text-xs" style={{ color: 'var(--ink-40)' }}>
+          New here?{' '}
+          <Link href="/browse" className="underline" style={{ color: 'var(--gold-deep)' }}>
+            Find a companion
+          </Link>
+        </p>
       </form>
     </main>
   );

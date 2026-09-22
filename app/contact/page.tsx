@@ -24,6 +24,14 @@ export default function ContactPage() {
           >
             +91 63037 28397
           </a>
+          <a
+            href="https://wa.me/916303728397"
+            target="_blank"
+            rel="noreferrer"
+            className="btn-primary mt-4 inline-block !px-5 !py-2.5 !text-sm"
+          >
+            Chat on WhatsApp
+          </a>
         </div>
 
         <div className="card mt-4 p-6">

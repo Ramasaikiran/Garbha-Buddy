@@ -83,15 +83,17 @@ export default async function BookCompanionPage({ params }: { params: { slug: st
           <p className="mt-1 font-medium" style={{ color: 'var(--gold)' }}>{TIER_LABEL[companion.tier]}</p>
         </div>
 
-        <a
-          href={companion.video_proof_url}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-5 inline-block text-sm underline"
-          style={{ color: 'var(--gold-deep)' }}
-        >
-          Watch dance proof video →
-        </a>
+        {companion.video_proof_url && (
+          <a
+            href={companion.video_proof_url}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-5 inline-block text-sm underline"
+            style={{ color: 'var(--gold-deep)' }}
+          >
+            Watch dance proof video →
+          </a>
+        )}
 
         <BookButton companionId={companion.id} companionName={companion.name} />
       </div>

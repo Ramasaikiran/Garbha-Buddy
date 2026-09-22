@@ -36,6 +36,7 @@ function ClientRegisterForm() {
   const [liabilityAccepted, setLiabilityAccepted] = useState(false);
   const [status, setStatus] = useState<'idle' | 'submitting' | 'error' | 'done'>('idle');
   const [error, setError] = useState('');
+  const [pendingBookingId, setPendingBookingId] = useState<string | null>(null);
   const [companionPreference, setCompanionPreference] = useState<string | null>(null);
   const [companionName, setCompanionName] = useState('');
   const [razorpayReady, setRazorpayReady] = useState(false);
@@ -215,8 +216,22 @@ function ClientRegisterForm() {
       if (!res.ok) throw new Error(data.error || 'Registration failed');
 
       if (data.booking?.id) {
+        setPendingBookingId(data.booking.id);
         await payForBooking(data.booking.id);
       }
+      setStatus('done');
+    } catch (err: any) {
+      setError(err.message);
+      setStatus('error');
+    }
+  }
+
+  async function retryPayment() {
+    if (!pendingBookingId) return;
+    setStatus('submitting');
+    setError('');
+    try {
+      await payForBooking(pendingBookingId);
       setStatus('done');
     } catch (err: any) {
       setError(err.message);
@@ -240,6 +255,37 @@ function ClientRegisterForm() {
           <Link href="/login" className="btn-primary mt-6 inline-block !px-6">
             Log in to see your booking
           </Link>
+        </div>
+      </main>
+    );
+  }
+
+  if (pendingBookingId) {
+    return (
+      <main
+        className="flex min-h-screen items-center justify-center px-6"
+        style={{ background: 'var(--paper)' }}
+      >
+        <div className="card max-w-sm p-8 text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.28em]" style={{ color: 'var(--gold)' }}>
+            Garba Buddy
+          </p>
+          <h1 className="font-display mt-3 text-2xl font-medium">Account created</h1>
+          <p className="mt-2 text-sm leading-relaxed" style={{ color: 'var(--ink-60)' }}>
+            Your booking is saved. Finish payment to confirm your spot with{' '}
+            {companionName || 'your companion'}.
+          </p>
+          {error && (
+            <p className="mt-3 text-sm" style={{ color: 'var(--maroon)' }}>{error}</p>
+          )}
+          <button
+            type="button"
+            onClick={retryPayment}
+            disabled={status === 'submitting'}
+            className="btn-primary mt-6 w-full"
+          >
+            {status === 'submitting' ? 'Opening payment…' : 'Complete payment'}
+          </button>
         </div>
       </main>
     );

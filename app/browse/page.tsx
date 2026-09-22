@@ -18,13 +18,19 @@ export default function BrowsePage() {
   const [city, setCity] = useState('');
   const [companions, setCompanions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     setLoading(true);
+    setError(false);
     const url = city ? `/api/companions/search?city=${encodeURIComponent(city)}` : '/api/companions/search';
     fetch(url)
-      .then((r) => r.json())
-      .then((data) => setCompanions(data.companions || []))
+      .then((r) => r.json().then((data) => ({ ok: r.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ok) throw new Error(data.error || 'Failed to load');
+        setCompanions(data.companions || []);
+      })
+      .catch(() => setError(true))
       .finally(() => setLoading(false));
   }, [city]);
 
@@ -60,8 +66,27 @@ export default function BrowsePage() {
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
           {loading && <p style={{ color: 'var(--ink-40)' }}>Loading…</p>}
-          {!loading && companions.length === 0 && (
-            <p style={{ color: 'var(--ink-40)' }}>No verified companions here yet.</p>
+          {!loading && error && (
+            <p style={{ color: 'var(--maroon)' }}>
+              Couldn't load companions right now. Refresh to try again.
+            </p>
+          )}
+          {!loading && !error && companions.length === 0 && (
+            <div>
+              <p style={{ color: 'var(--ink-40)' }}>
+                No verified companions in {city || 'this city'} yet.
+              </p>
+              {city && (
+                <button
+                  type="button"
+                  onClick={() => setCity('')}
+                  className="mt-2 text-sm underline"
+                  style={{ color: 'var(--gold-deep)' }}
+                >
+                  See all cities instead
+                </button>
+              )}
+            </div>
           )}
           {companions.map((c) => (
             <CompanionCard key={c.id} companion={c} />

@@ -46,6 +46,10 @@ export default function AboutPage() {
           </Link>
           .
         </p>
+
+        <Link href="/browse" className="btn-primary mt-6 inline-block !px-6">
+          Find a companion →
+        </Link>
       </article>
     </main>
   );

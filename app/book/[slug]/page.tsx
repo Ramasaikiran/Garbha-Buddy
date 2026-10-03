@@ -1,6 +1,9 @@
 import { db } from '@/lib/db';
 import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
 import BookButton from './book-button';
+
+const SITE_URL = 'https://garbabuddy.lol';
 
 const TIER_LABEL: Record<string, string> = {
   gold: 'Gold · ₹999 / 2hr',
@@ -18,6 +21,33 @@ async function getCompanion(slug: string) {
     [slug]
   );
   return result.rows[0] || null;
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
+  const companion = await getCompanion(params.slug);
+  if (!companion || !companion.is_verified) {
+    return { title: 'Companion Profile', robots: { index: false, follow: true } };
+  }
+
+  const title = `Book ${companion.name}, Garba Companion in ${companion.city}`;
+  const description = `${companion.name} is a verified, ID-checked Garba dance companion in ${companion.city}. ${TIER_LABEL[companion.tier] || ''} Book now for this Navratri.`.trim();
+  const url = `${SITE_URL}/book/${params.slug}`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      url,
+      title,
+      description,
+      images: companion.profile_photo_url ? [{ url: companion.profile_photo_url }] : undefined,
+    },
+  };
 }
 
 export default async function BookCompanionPage({ params }: { params: { slug: string } }) {
@@ -56,7 +86,7 @@ export default async function BookCompanionPage({ params }: { params: { slug: st
         {companion.profile_photo_url && (
           <img
             src={companion.profile_photo_url}
-            alt={companion.name}
+            alt={`${companion.name}, Garba dance companion in ${companion.city}`}
             className="mt-4 h-56 w-full rounded-xl object-cover"
             style={{ border: '1px solid var(--line)' }}
           />

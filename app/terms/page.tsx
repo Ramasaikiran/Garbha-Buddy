@@ -1,6 +1,10 @@
 import Link from 'next/link';
 
-export const metadata = { title: 'Terms & Conditions' };
+export const metadata = {
+  title: 'Terms & Conditions',
+  description: "Garba Buddy's terms and conditions for clients and companions.",
+  alternates: { canonical: 'https://garbabuddy.lol/terms' },
+};
 
 export default function TermsPage() {
   return (

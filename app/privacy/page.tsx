@@ -1,6 +1,10 @@
 import Link from 'next/link';
 
-export const metadata = { title: 'Privacy Policy' };
+export const metadata = {
+  title: 'Privacy Policy',
+  description: "Garba Buddy's privacy policy: how client and companion data is collected, used, and stored.",
+  alternates: { canonical: 'https://garbabuddy.lol/privacy' },
+};
 
 export default function PrivacyPage() {
   return (

@@ -1,6 +1,12 @@
 import Link from 'next/link';
 
-export const metadata = { title: 'About Us' };
+export const metadata = {
+  title: 'About Us',
+  description:
+    'Garba Buddy pairs solo Navratri attendees with verified, ID-checked local dance companions, so no one has to stand on the sidelines.',
+  alternates: { canonical: 'https://garbabuddy.lol/about' },
+  openGraph: { url: 'https://garbabuddy.lol/about', title: 'About Garba Buddy' },
+};
 
 export default function AboutPage() {
   return (

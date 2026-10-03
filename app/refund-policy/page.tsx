@@ -1,6 +1,10 @@
 import Link from 'next/link';
 
-export const metadata = { title: 'Refund Policy' };
+export const metadata = {
+  title: 'Refund Policy',
+  description: "Garba Buddy's cancellation and refund policy for client bookings.",
+  alternates: { canonical: 'https://garbabuddy.lol/refund-policy' },
+};
 
 export default function RefundPolicyPage() {
   return (

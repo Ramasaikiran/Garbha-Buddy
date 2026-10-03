@@ -1,6 +1,11 @@
 import Link from 'next/link';
 
-export const metadata = { title: 'Contact Us' };
+export const metadata = {
+  title: 'Contact Us',
+  description: 'Get in touch with Garba Buddy by phone, WhatsApp, or email.',
+  alternates: { canonical: 'https://garbabuddy.lol/contact' },
+  openGraph: { url: 'https://garbabuddy.lol/contact', title: 'Contact Garba Buddy' },
+};
 
 export default function ContactPage() {
   return (

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import DeleteAccountSection from '@/components/DeleteAccountSection';
 
 const TIER_LABEL: Record<string, string> = {
   gold: 'Gold · ₹999 / 2hr',
@@ -9,7 +10,108 @@ const TIER_LABEL: Record<string, string> = {
   diamond: 'Diamond · ₹1,999 / full night',
 };
 
-export default function CompanionProfilePage() {
+export default function ProfilePage() {
+  const [role, setRole] = useState<'client' | 'companion' | null>(null);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.error) {
+          setError(data.error);
+          return;
+        }
+        setRole(data.role);
+      });
+  }, []);
+
+  if (error) {
+    return (
+      <main className="flex min-h-screen items-center justify-center px-6 text-center" style={{ background: 'var(--paper)' }}>
+        <p style={{ color: 'var(--ink-60)' }}>
+          {error}.{' '}
+          <Link href="/login" className="underline" style={{ color: 'var(--gold-deep)' }}>
+            log in
+          </Link>
+        </p>
+      </main>
+    );
+  }
+
+  if (!role) {
+    return (
+      <main className="flex min-h-screen items-center justify-center" style={{ background: 'var(--paper)' }}>
+        <p style={{ color: 'var(--ink-40)' }}>Loading…</p>
+      </main>
+    );
+  }
+
+  return role === 'companion' ? <CompanionProfilePage /> : <ClientAccountPage />;
+}
+
+function ClientAccountPage() {
+  const [me, setMe] = useState<{ name: string; email: string | null } | null>(null);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.error) {
+          setError(data.error);
+          return;
+        }
+        setMe(data);
+      });
+  }, []);
+
+  if (error) {
+    return (
+      <main className="flex min-h-screen items-center justify-center px-6 text-center" style={{ background: 'var(--paper)' }}>
+        <p style={{ color: 'var(--ink-60)' }}>
+          {error}.{' '}
+          <Link href="/login" className="underline" style={{ color: 'var(--gold-deep)' }}>
+            log in
+          </Link>
+        </p>
+      </main>
+    );
+  }
+
+  if (!me) {
+    return (
+      <main className="flex min-h-screen items-center justify-center" style={{ background: 'var(--paper)' }}>
+        <p style={{ color: 'var(--ink-40)' }}>Loading…</p>
+      </main>
+    );
+  }
+
+  return (
+    <main style={{ background: 'var(--paper)' }} className="min-h-screen px-6 py-16">
+      <div className="mx-auto max-w-lg">
+        <div className="flex items-center justify-between">
+          <h1 className="font-display text-4xl font-medium">Your account</h1>
+          <Link href="/dashboard" className="text-sm underline" style={{ color: 'var(--ink-40)' }}>
+            ← Bookings
+          </Link>
+        </div>
+
+        <div className="card mt-6 p-6">
+          <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--gold)' }}>
+            Details
+          </p>
+          <p className="mt-2 text-sm" style={{ color: 'var(--ink-60)' }}>Name: {me.name}</p>
+          {me.email && <p className="mt-1 text-sm" style={{ color: 'var(--ink-60)' }}>Email: {me.email}</p>}
+        </div>
+
+        <DeleteAccountSection />
+      </div>
+    </main>
+  );
+}
+
+function CompanionProfilePage() {
   const [profile, setProfile] = useState<any>(null);
   const [bio, setBio] = useState('');
   const [profilePhotoUrl, setProfilePhotoUrl] = useState('');
@@ -226,6 +328,8 @@ export default function CompanionProfilePage() {
             </div>
           </div>
         )}
+
+        <DeleteAccountSection />
       </div>
     </main>
   );

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { createHmac } from 'crypto';
+import { createHmac, timingSafeEqual } from 'crypto';
 
 export async function POST(request: Request) {
   const rawBody = await request.text();
@@ -10,11 +10,22 @@ export async function POST(request: Request) {
     .update(rawBody)
     .digest('hex');
 
-  if (expected !== signature) {
+  const expectedBuf = Buffer.from(expected, 'hex');
+  const signatureBuf = Buffer.from(signature, 'hex');
+  const signatureValid =
+    expectedBuf.length === signatureBuf.length && timingSafeEqual(expectedBuf, signatureBuf);
+
+  if (!signatureValid) {
     return NextResponse.json({ error: 'Invalid webhook signature' }, { status: 401 });
   }
 
-  const event = JSON.parse(rawBody);
+  let event: any;
+  try {
+    event = JSON.parse(rawBody);
+  } catch (err) {
+    console.error('razorpay webhook: malformed JSON body', err);
+    return NextResponse.json({ error: 'Malformed body' }, { status: 400 });
+  }
 
   // Match on order_id, not payment.notes.bookingId: order_id is a required
   // core field on every payment entity, always present. notes are
@@ -25,33 +36,34 @@ export async function POST(request: Request) {
   // We already store razorpay_order_id ourselves when the order was created,
   // so this removes the dependency entirely.
 
-  if (event.event === 'payment.captured') {
-    const payment = event.payload.payment.entity;
-    const orderId = payment.order_id;
-    if (orderId) {
-      await db.query(
-        `UPDATE bookings
-         SET status = 'active', razorpay_payment_id = $1, payout_status = 'escrow'
-         WHERE razorpay_order_id = $2 AND status = 'pending'`,
-        [payment.id, orderId]
-      );
+  try {
+    if (event.event === 'payment.captured') {
+      const orderId = event.payload?.payment?.entity?.order_id;
+      const paymentId = event.payload?.payment?.entity?.id;
+      if (orderId) {
+        await db.query(
+          `UPDATE bookings
+           SET status = 'active', razorpay_payment_id = $1, payout_status = 'escrow'
+           WHERE razorpay_order_id = $2 AND status = 'pending'`,
+          [paymentId, orderId]
+        );
+      }
     }
-  }
 
-  if (event.event === 'payment.failed') {
-    const payment = event.payload.payment.entity;
-    const orderId = payment.order_id;
-    if (orderId) {
-      // Keep status 'pending' and clear the order id so the client can
-      // retry with a fresh order. Marking this 'cancelled' would be wrong:
-      // it's indistinguishable from a real cancellation in admin stats,
-      // and create-order refuses to issue a new order for anything but
-      // a 'pending' booking, permanently locking the client out.
-      await db.query(
-        `UPDATE bookings SET razorpay_order_id = NULL WHERE razorpay_order_id = $1 AND status = 'pending'`,
-        [orderId]
-      );
-    }
+    // Deliberately no handling for 'payment.failed': a failed attempt
+    // doesn't need any booking update. Status is already 'pending', and
+    // create-order already reuses the existing razorpay_order_id for a
+    // retry — Razorpay allows retrying payment against the same order.
+    // (Previously this cleared razorpay_order_id here, but Razorpay can
+    // send payment.failed for one attempt and payment.captured for a later
+    // retry on the SAME order_id within one checkout session — clearing it
+    // on failure meant the later captured event could no longer find the
+    // booking by order_id, so a payment that actually succeeded would never
+    // activate the booking.)
+  } catch (err) {
+    console.error('razorpay webhook: failed to process event', event.event, err);
+    // Still 200: Razorpay retries on non-2xx, and retrying a malformed/
+    // unexpected payload will fail identically every time.
   }
 
   return NextResponse.json({ received: true });

@@ -284,6 +284,14 @@ export default function DashboardPage() {
                     {PAYOUT_LABEL[b.payout_status] || b.payout_status}
                   </p>
                 )}
+                {role === 'companion' && b.status === 'active' && b.otp_code && (
+                  <p
+                    className="mt-2 inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                    style={{ background: 'rgba(168, 117, 44, 0.08)', color: 'var(--gold-deep)' }}
+                  >
+                    Check-in code: {b.otp_code}
+                  </p>
+                )}
                 {b.status === 'active' && (
                   <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
                     <Link

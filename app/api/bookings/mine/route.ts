@@ -11,7 +11,9 @@ export async function GET() {
             client.name AS client_name, client.phone_number AS client_phone,
             companion.name AS companion_name,
             CASE WHEN b.status IN ('active', 'completed')
-                 THEN companion.phone_number ELSE NULL END AS companion_phone
+                 THEN companion.phone_number ELSE NULL END AS companion_phone,
+            CASE WHEN b.companion_id = $1 AND b.status = 'active'
+                 THEN b.otp_code ELSE NULL END AS otp_code
      FROM bookings b
      JOIN users client ON client.id = b.client_id
      JOIN users companion ON companion.id = b.companion_id

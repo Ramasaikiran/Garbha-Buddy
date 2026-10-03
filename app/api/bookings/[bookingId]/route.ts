@@ -27,7 +27,11 @@ export async function GET(
     return NextResponse.json({ error: 'Not authorized to view this booking' }, { status: 403 });
   }
 
-  // otp_code withheld from the client-facing response; only companion states it aloud at the gate
+  // otp_code withheld from the client-facing response; only the companion
+  // sees it, to state aloud at the gate for the client to enter.
   const { otp_code, client_id, companion_id, ...safe } = booking;
-  return NextResponse.json({ booking: safe });
+  const isCompanion = companion_id === session.userId;
+  return NextResponse.json({
+    booking: isCompanion ? { ...safe, otp_code } : safe,
+  });
 }

@@ -66,9 +66,14 @@ export async function POST(
            cancellation_reason = 'companion_no_show',
            refund_amount = $1,
            cancellation_note = $2,
-           payout_status = 'refunded'
-       WHERE id = $3`,
-      [row.amount_paid, note || 'Companion did not arrive', params.bookingId]
+           payout_status = $3
+       WHERE id = $4`,
+      [
+        refundSucceeded ? row.amount_paid : null,
+        note || 'Companion did not arrive',
+        refundSucceeded ? 'refunded' : 'failed',
+        params.bookingId,
+      ]
     );
     await client.query(
       `INSERT INTO companion_penalties (companion_id, booking_id, amount)

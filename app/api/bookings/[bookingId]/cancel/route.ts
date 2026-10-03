@@ -60,9 +60,9 @@ export async function POST(
      SET status = 'cancelled',
          cancellation_reason = 'client_cancelled',
          refund_amount = $1,
-         payout_status = 'refunded'
-     WHERE id = $2`,
-    [refundAmount, params.bookingId]
+         payout_status = $2
+     WHERE id = $3`,
+    [refundAmount, refundSucceeded ? 'refunded' : 'failed', params.bookingId]
   );
 
   return NextResponse.json({

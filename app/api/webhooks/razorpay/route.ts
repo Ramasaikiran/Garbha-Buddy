@@ -33,8 +33,13 @@ export async function POST(request: Request) {
     const payment = event.payload.payment.entity;
     const bookingId = payment.notes?.bookingId;
     if (bookingId) {
+      // Keep status 'pending' and clear the order id so the client can
+      // retry with a fresh order. Marking this 'cancelled' would be wrong:
+      // it's indistinguishable from a real cancellation in admin stats,
+      // and create-order refuses to issue a new order for anything but
+      // a 'pending' booking, permanently locking the client out.
       await db.query(
-        `UPDATE bookings SET status = 'cancelled' WHERE id = $1 AND status = 'pending'`,
+        `UPDATE bookings SET razorpay_order_id = NULL WHERE id = $1 AND status = 'pending'`,
         [bookingId]
       );
     }

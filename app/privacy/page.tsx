@@ -51,16 +51,39 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="font-display text-xl font-medium" style={{ color: 'var(--ink)' }}>4. Payments</h2>
+            <h2 className="font-display text-xl font-medium" style={{ color: 'var(--ink)' }}>4. Payments and payouts</h2>
             <p className="mt-2">
-              Payments are processed by Razorpay. We do not store your card
-              or bank account details. That information is handled entirely
-              by Razorpay's systems.
+              Client payments are processed by Razorpay. We do not store your
+              card or bank account details; that information is handled
+              entirely by Razorpay's systems. For companions, payouts after a
+              completed booking are sent via RazorpayX. We store only the
+              RazorpayX fund account reference needed to send your payout,
+              not your bank account or card details directly.
             </p>
           </section>
 
           <section>
-            <h2 className="font-display text-xl font-medium" style={{ color: 'var(--ink)' }}>5. How long we keep it</h2>
+            <h2 className="font-display text-xl font-medium" style={{ color: 'var(--ink)' }}>5. Cookies</h2>
+            <p className="mt-2">
+              We use a single strictly-necessary cookie to keep you signed
+              in. It identifies your session and nothing else. We do not use
+              advertising or tracking cookies, and we do not run analytics
+              scripts that follow you across sites.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="font-display text-xl font-medium" style={{ color: 'var(--ink)' }}>6. Who processes your data</h2>
+            <p className="mt-2">
+              We use Supabase for account authentication and Razorpay /
+              RazorpayX for payments and payouts. These providers process
+              data on our behalf under their own security practices. We do
+              not sell or share your data with anyone else.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="font-display text-xl font-medium" style={{ color: 'var(--ink)' }}>7. How long we keep it</h2>
             <p className="mt-2">
               We retain identity and booking records for as long as your
               account is active and for a reasonable period after, to handle
@@ -69,7 +92,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="font-display text-xl font-medium" style={{ color: 'var(--ink)' }}>6. Your rights</h2>
+            <h2 className="font-display text-xl font-medium" style={{ color: 'var(--ink)' }}>8. Your rights</h2>
             <p className="mt-2">
               Under India's Digital Personal Data Protection Act, you can ask
               us what personal data we hold about you, request corrections,
@@ -83,7 +106,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="font-display text-xl font-medium" style={{ color: 'var(--ink)' }}>7. Security</h2>
+            <h2 className="font-display text-xl font-medium" style={{ color: 'var(--ink)' }}>9. Security</h2>
             <p className="mt-2">
               We use encrypted connections and access controls to protect
               your data. No system is perfectly secure, but we treat identity
@@ -92,7 +115,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="font-display text-xl font-medium" style={{ color: 'var(--ink)' }}>8. Changes to this policy</h2>
+            <h2 className="font-display text-xl font-medium" style={{ color: 'var(--ink)' }}>10. Changes to this policy</h2>
             <p className="mt-2">
               We may update this policy from time to time. Material changes
               will be reflected here with an updated date at the top.

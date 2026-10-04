@@ -11,10 +11,12 @@ const STATUS_COLOR: Record<string, string> = {
 };
 
 export default function AdminPage() {
-  const [tab, setTab] = useState<'companions' | 'bookings'>('companions');
+  const [tab, setTab] = useState<'companions' | 'bookings' | 'deletions'>('companions');
   const [pending, setPending] = useState<any[]>([]);
   const [bookings, setBookings] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
+  const [deletionRequests, setDeletionRequests] = useState<any[]>([]);
+  const [deletionError, setDeletionError] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -39,8 +41,18 @@ export default function AdminPage() {
     setStats(data.stats || null);
   }
 
+  async function loadDeletionRequests() {
+    const res = await fetch('/api/admin/deletion-requests');
+    if (res.status === 401) {
+      router.push('/admin/login');
+      return;
+    }
+    const data = await res.json();
+    setDeletionRequests(data.requests || []);
+  }
+
   useEffect(() => {
-    Promise.all([loadCompanions(), loadBookings()]).then(() => setLoading(false));
+    Promise.all([loadCompanions(), loadBookings(), loadDeletionRequests()]).then(() => setLoading(false));
   }, []);
 
   async function decide(companionId: string, approve: boolean) {
@@ -54,6 +66,25 @@ export default function AdminPage() {
       return;
     }
     setPending((p) => p.filter((c) => c.id !== companionId));
+  }
+
+  async function decideDeletion(requestId: string, approve: boolean) {
+    setDeletionError((e) => ({ ...e, [requestId]: '' }));
+    const res = await fetch('/api/admin/deletion-requests', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ requestId, approve }),
+    });
+    if (res.status === 401) {
+      router.push('/admin/login');
+      return;
+    }
+    const data = await res.json();
+    if (!res.ok) {
+      setDeletionError((e) => ({ ...e, [requestId]: data.error || 'Could not process this request.' }));
+      return;
+    }
+    setDeletionRequests((reqs) => reqs.filter((r) => r.id !== requestId));
   }
 
   async function logout() {
@@ -101,6 +132,17 @@ export default function AdminPage() {
             }
           >
             Bookings & payments
+          </button>
+          <button
+            onClick={() => setTab('deletions')}
+            className="rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-wide"
+            style={
+              tab === 'deletions'
+                ? { background: 'var(--gold)', color: '#fff' }
+                : { background: 'var(--paper)', border: '1px solid var(--line)', color: 'var(--ink-60)' }
+            }
+          >
+            Deletion requests ({deletionRequests.length})
           </button>
         </div>
 
@@ -200,6 +242,34 @@ export default function AdminPage() {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {tab === 'deletions' && (
+          <div className="mt-8 space-y-4">
+            {deletionRequests.length === 0 && <p style={{ color: 'var(--ink-40)' }}>Nothing to review.</p>}
+            {deletionRequests.map((r) => (
+              <div key={r.id} className="card p-5">
+                <p className="font-medium">{r.name} · {r.role}</p>
+                <p className="text-sm" style={{ color: 'var(--ink-40)' }}>
+                  {r.email || 'no email'} · {r.phone_number || 'no phone'}
+                </p>
+                <p className="mt-1 text-xs" style={{ color: 'var(--ink-40)' }}>
+                  Requested {new Date(r.requested_at).toLocaleDateString()}
+                </p>
+                {deletionError[r.id] && (
+                  <p className="mt-2 text-sm" style={{ color: 'var(--maroon)' }}>{deletionError[r.id]}</p>
+                )}
+                <div className="mt-4 flex gap-2">
+                  <button onClick={() => decideDeletion(r.id, true)} className="btn-primary !px-4 !py-1.5 !text-xs">
+                    Approve
+                  </button>
+                  <button onClick={() => decideDeletion(r.id, false)} className="btn-secondary !px-4 !py-1.5 !text-xs">
+                    Reject
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>

@@ -41,25 +41,40 @@ async function handlePayouts(request: Request) {
     );
 
     const settledPenaltyIds: string[] = [];
+    let partialPenalty: { id: string; remaining: number } | null = null;
     for (const penalty of penalties.rows) {
       if (payoutRupees <= 0) break;
       const deduction = Math.min(penalty.amount, payoutRupees);
       payoutRupees -= deduction;
-      if (deduction === penalty.amount) settledPenaltyIds.push(penalty.id);
-      // A partially-settled penalty (deduction < amount) is left pending:
-      // this payout was fully consumed but the penalty isn't fully repaid yet.
-      if (deduction < penalty.amount) break;
+      if (deduction === penalty.amount) {
+        settledPenaltyIds.push(penalty.id);
+      } else {
+        // Partially repaid: shrink the pending amount so the same rupees
+        // are not deducted again from the next payout.
+        partialPenalty = { id: penalty.id, remaining: penalty.amount - deduction };
+        break;
+      }
     }
 
-    const payoutAmount = Math.round(payoutRupees * 100); // paise
-
-    if (payoutAmount <= 0) {
+    async function settlePenalties() {
       if (settledPenaltyIds.length) {
         await db.query(
           `UPDATE companion_penalties SET status = 'deducted' WHERE id = ANY($1::uuid[])`,
           [settledPenaltyIds]
         );
       }
+      if (partialPenalty) {
+        await db.query(`UPDATE companion_penalties SET amount = $1 WHERE id = $2`, [
+          partialPenalty.remaining,
+          partialPenalty.id,
+        ]);
+      }
+    }
+
+    const payoutAmount = Math.round(payoutRupees * 100); // paise
+
+    if (payoutAmount <= 0) {
+      await settlePenalties();
       await db.query(`UPDATE bookings SET payout_status = 'paid_out' WHERE id = $1`, [row.id]);
       results.push({ bookingId: row.id, paid: true, amount: 0, note: 'fully offset by penalty' });
       continue;
@@ -75,6 +90,9 @@ async function handlePayouts(request: Request) {
               `${process.env.RAZORPAY_KEY_ID}:${process.env.RAZORPAY_KEY_SECRET}`
             ).toString('base64'),
           'Content-Type': 'application/json',
+          // Same booking always maps to the same key, so a retry after a
+          // crash or a concurrent run cannot pay the companion twice.
+          'X-Payout-Idempotency': `booking_${row.id}`,
         },
         body: JSON.stringify({
           account_number: process.env.RAZORPAYX_ACCOUNT_NUMBER,
@@ -91,12 +109,7 @@ async function handlePayouts(request: Request) {
       if (!res.ok) throw new Error(await res.text());
 
       await db.query(`UPDATE bookings SET payout_status = 'paid_out' WHERE id = $1`, [row.id]);
-      if (settledPenaltyIds.length) {
-        await db.query(
-          `UPDATE companion_penalties SET status = 'deducted' WHERE id = ANY($1::uuid[])`,
-          [settledPenaltyIds]
-        );
-      }
+      await settlePenalties();
       results.push({ bookingId: row.id, paid: true, amount: payoutRupees });
     } catch (err: any) {
       results.push({ bookingId: row.id, error: err.message });

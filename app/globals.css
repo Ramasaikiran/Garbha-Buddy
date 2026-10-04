@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  /* Paper & ink — warm, restrained, not stark white/black */
+  /* Paper & ink, warm, restrained, not stark white/black */
   --paper: #FAF7F1;
   --surface: #FFFFFF;
   --ink: #1A1420;
@@ -64,7 +64,7 @@ a {
   animation: rise 0.8s var(--ease) both;
 }
 
-/* Shared form primitives — used across registration, login, dashboard */
+/* Shared form primitives, used across registration, login, dashboard */
 .field-label {
   display: block;
   margin-bottom: 0.4rem;

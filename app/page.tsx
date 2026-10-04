@@ -64,6 +64,14 @@ const FAQS = [
     a: "Compare them to their photo. Doesn't match? Decline on the spot. Booking's cancelled, refund follows.",
   },
   {
+    q: 'Can I cancel?',
+    a: 'Yes. Cancel more than 24 hours before your date and 80% is refunded. Cancel within 24 hours and 70% is refunded. If the wrong person shows up, you get a full refund.',
+  },
+  {
+    q: 'Is this a dating service?',
+    a: 'No. A companion is someone to dance Garba with, nothing else.',
+  },
+  {
     q: 'Can a companion be booked by women only?',
     a: "Yes. Some set that rule. Don't meet it? Payment's blocked before you can proceed.",
   },
@@ -141,7 +149,7 @@ export default function HomePage() {
           className="reveal text-xs font-semibold uppercase tracking-[0.28em]"
           style={{ color: 'var(--gold)', animationDelay: '0ms' }}
         >
-          Navratri 2026
+          Navratri 2026 · Starts 11 Oct
         </p>
 
         <h1
@@ -205,10 +213,16 @@ export default function HomePage() {
         </div>
 
         <p
-          className="reveal mt-3 text-xs font-medium"
+          className="reveal mt-4 text-xs font-medium"
+          style={{ color: 'var(--ink-60)' }}
+        >
+          From ₹999 · Full refund if the face doesn't match
+        </p>
+        <p
+          className="reveal mt-1 text-xs font-medium"
           style={{ color: 'var(--gold)' }}
         >
-          Spots fill fast closer to Navratri, book early
+          Navratri starts 11 Oct. Book early to lock your date.
         </p>
 
         <p
@@ -295,6 +309,12 @@ export default function HomePage() {
                 <p className="text-sm leading-relaxed" style={{ color: 'var(--ink-60)' }}>
                   {t.blurb}
                 </p>
+                <Link
+                  href="/browse"
+                  className={`mt-6 block w-full text-center ${i === 1 ? 'btn-primary' : 'btn-secondary'}`}
+                >
+                  Book {t.name}
+                </Link>
               </div>
             ))}
           </div>
@@ -358,7 +378,7 @@ export default function HomePage() {
             Fast.
           </h2>
           <p className="mx-auto mt-4 max-w-xs text-base" style={{ color: 'var(--ink-60)' }}>
-            Don't spend it on the sidelines.
+            Don't spend it on the sidelines. Companions start at ₹999.
           </p>
 
           <div className="mx-auto mt-8 max-w-sm space-y-3 text-left">

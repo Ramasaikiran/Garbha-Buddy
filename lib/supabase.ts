@@ -4,7 +4,7 @@ let _client: SupabaseClient | null = null;
 
 // Server-only. Uses the service role key so it can send/verify OTPs and
 // create admin accounts without a browser session. Never import this
-// from client components — the service role key must never reach the browser.
+// from client components, the service role key must never reach the browser.
 export function getSupabaseAdmin(): SupabaseClient {
   if (!_client) {
     _client = createClient(

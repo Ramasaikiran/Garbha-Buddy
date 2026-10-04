@@ -1,7 +1,7 @@
 -- Migrating companion/client/admin auth to Supabase Auth.
 -- These columns link our existing profile tables to auth.users, which
--- Supabase manages. password_hash on admin_users is no longer written —
--- Supabase now holds the credential — so it's made nullable rather than
+-- Supabase manages. password_hash on admin_users is no longer written,
+-- Supabase now holds the credential, so it's made nullable rather than
 -- dropped, to avoid touching any existing rows.
 
 ALTER TABLE users

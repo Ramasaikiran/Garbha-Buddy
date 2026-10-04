@@ -46,9 +46,13 @@ export async function POST(
     return NextResponse.json({ error: 'Not logged in' }, { status: 401 });
   }
 
-  const { body } = await request.json();
-  if (!body?.trim()) {
+  const payload = await request.json().catch(() => null);
+  const body = payload?.body;
+  if (typeof body !== 'string' || !body.trim()) {
     return NextResponse.json({ error: 'body required' }, { status: 400 });
+  }
+  if (body.length > 2000) {
+    return NextResponse.json({ error: 'Message is too long (max 2000 characters)' }, { status: 400 });
   }
 
   const check = await assertMember(params.bookingId, session.userId);

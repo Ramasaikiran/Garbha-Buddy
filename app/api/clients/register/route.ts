@@ -4,6 +4,7 @@ import { randomInt } from 'crypto';
 import { TIER_AMOUNTS } from '@/lib/razorpay';
 import { verifyEmailVerificationToken } from '@/lib/email-verification';
 import { getSupabaseAdmin } from '@/lib/supabase';
+import { parseAvailabilityDates, todayIST } from '@/lib/availability';
 
 function isValidUrl(value: unknown): value is string {
   if (typeof value !== 'string') return false;
@@ -62,19 +63,6 @@ export async function POST(request: Request) {
     }
     const authUserId = emailVerification.authUserId;
 
-    if (authUserId) {
-      const { error: pwError } = await getSupabaseAdmin().auth.admin.updateUserById(authUserId, {
-        password,
-      });
-      if (pwError) {
-        console.error('client registration: could not set password', pwError);
-        return NextResponse.json(
-          { error: 'Could not set your password. Try again.' },
-          { status: 500 }
-        );
-      }
-    }
-
     if (!/^\d{10}$/.test(String(phoneNumber))) {
       return NextResponse.json(
         { error: 'Phone number must be exactly 10 digits, numbers only' },
@@ -129,10 +117,10 @@ export async function POST(request: Request) {
 
     // Validate the companion BEFORE creating any user row, so a rejected
     // booking never leaves an orphan account behind.
-    let companionRow: { preference: string; tier: string } | null = null;
+    let companionRow: { preference: string; tier: string; availability_dates: unknown } | null = null;
     if (companionId) {
       const result = await db.query(
-        `SELECT cm.preference, cm.tier, u.is_verified
+        `SELECT cm.preference, cm.tier, cm.availability_dates, u.is_verified
          FROM companions_meta cm
          JOIN users u ON u.id = cm.id
          WHERE cm.id = $1`,
@@ -155,6 +143,35 @@ export async function POST(request: Request) {
         return NextResponse.json(
           { error: 'This companion only accepts female clients' },
           { status: 400 }
+        );
+      }
+
+      if (typeof bookingDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(bookingDate) || Number.isNaN(Date.parse(bookingDate))) {
+        return NextResponse.json({ error: 'Choose a booking date' }, { status: 400 });
+      }
+      if (bookingDate < todayIST()) {
+        return NextResponse.json({ error: 'Booking date cannot be in the past' }, { status: 400 });
+      }
+      const open = parseAvailabilityDates(companionRow!.availability_dates);
+      if (open.length > 0 && !open.includes(bookingDate)) {
+        return NextResponse.json(
+          { error: 'This companion is not available on that date. Pick another date.' },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Set the password only after every check above has passed, so a rejected
+    // request never changes the credential of an existing auth user.
+    if (authUserId) {
+      const { error: pwError } = await getSupabaseAdmin().auth.admin.updateUserById(authUserId, {
+        password,
+      });
+      if (pwError) {
+        console.error('client registration: could not set password', pwError);
+        return NextResponse.json(
+          { error: 'Could not set your password. Try again.' },
+          { status: 500 }
         );
       }
     }
@@ -181,7 +198,7 @@ export async function POST(request: Request) {
             (client_id, companion_id, amount_paid, otp_code, booking_date, ticket_liability_accepted)
            VALUES ($1, $2, $3, $4, $5, $6)
            RETURNING id`,
-          [clientId, companionId, amount, otp, bookingDate || new Date(), true]
+          [clientId, companionId, amount, otp, bookingDate, true]
         );
         booking = { id: bookingResult.rows[0].id, amount };
       }

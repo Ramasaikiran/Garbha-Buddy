@@ -126,6 +126,9 @@ export default async function BookCompanionPage({ params }: { params: { slug: st
         )}
 
         <BookButton companionId={companion.id} companionName={companion.name} />
+        <p className="mt-3 text-center text-xs" style={{ color: 'var(--ink-40)' }}>
+          Full refund if the face doesn't match. Payment is held in escrow until check-in.
+        </p>
       </div>
     </main>
   );

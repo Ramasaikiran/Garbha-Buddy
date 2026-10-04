@@ -8,7 +8,7 @@ ALTER TABLE bookings
 
 -- A no-show penalty owed by a companion, settled against a FUTURE payout
 -- (the no-show booking itself never completes, so there's nothing to
--- deduct from directly — this is deducted from their next paid-out booking).
+-- deduct from directly, this is deducted from their next paid-out booking).
 CREATE TABLE companion_penalties (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     companion_id UUID NOT NULL REFERENCES users(id),

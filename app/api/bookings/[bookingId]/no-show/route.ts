@@ -19,47 +19,61 @@ export async function POST(
 
   const { note } = await request.json().catch(() => ({ note: undefined }));
 
-  const booking = await db.query(
-    `SELECT status, razorpay_payment_id, amount_paid, client_id, companion_id
-     FROM bookings WHERE id = $1`,
-    [params.bookingId]
-  );
-  const row = booking.rows[0];
-  if (!row) {
-    return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
-  }
-  if (row.client_id !== session.userId) {
-    return NextResponse.json({ error: 'Not authorized for this booking' }, { status: 403 });
-  }
-  if (row.status !== 'active') {
-    return NextResponse.json(
-      { error: 'This can only be reported for a paid, upcoming booking' },
-      { status: 400 }
-    );
-  }
-
+  const penaltyBase = COMPANION_NO_SHOW_PENALTY;
+  const client = await db.connect();
   let refundSucceeded = false;
   let refundError: string | null = null;
-
-  if (row.razorpay_payment_id) {
-    try {
-      await getRazorpay().payments.refund(row.razorpay_payment_id, {
-        amount: Math.round(row.amount_paid * 100), // full refund, paise
-        speed: 'normal',
-        notes: { bookingId: params.bookingId, reason: 'companion_no_show' },
-      });
-      refundSucceeded = true;
-    } catch (err: any) {
-      console.error('no-show refund failed', params.bookingId, err);
-      refundError = err?.error?.description || err?.message || 'Unknown refund error';
-    }
-  }
-
-  const penaltyAmount = Math.round(row.amount_paid * COMPANION_NO_SHOW_PENALTY);
-
-  const client = await db.connect();
   try {
     await client.query('BEGIN');
+    // Row lock: prevents a double refund and a duplicate penalty on repeated taps.
+    const booking = await client.query(
+      `SELECT status, razorpay_payment_id, amount_paid, client_id, companion_id,
+              booking_date <= (NOW() AT TIME ZONE 'Asia/Kolkata')::date AS event_started
+       FROM bookings WHERE id = $1 FOR UPDATE`,
+      [params.bookingId]
+    );
+    const row = booking.rows[0];
+    if (!row) {
+      await client.query('ROLLBACK');
+      return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
+    }
+    if (row.client_id !== session.userId) {
+      await client.query('ROLLBACK');
+      return NextResponse.json({ error: 'Not authorized for this booking' }, { status: 403 });
+    }
+    if (row.status !== 'active') {
+      await client.query('ROLLBACK');
+      return NextResponse.json(
+        { error: 'This can only be reported for a paid, upcoming booking' },
+        { status: 400 }
+      );
+    }
+    // Without this, a client could skip the cancellation fee by reporting a
+    // "no-show" days before the event and get a full refund.
+    if (!row.event_started) {
+      await client.query('ROLLBACK');
+      return NextResponse.json(
+        { error: 'You can report a no-show only on or after the booked date. To change plans, cancel the booking instead.' },
+        { status: 400 }
+      );
+    }
+
+    if (row.razorpay_payment_id) {
+      try {
+        await getRazorpay().payments.refund(row.razorpay_payment_id, {
+          amount: Math.round(row.amount_paid * 100), // full refund, paise
+          speed: 'normal',
+          notes: { bookingId: params.bookingId, reason: 'companion_no_show' },
+        });
+        refundSucceeded = true;
+      } catch (err: any) {
+        console.error('no-show refund failed', params.bookingId, err);
+        refundError = err?.error?.description || err?.message || 'Unknown refund error';
+      }
+    }
+
+    const penaltyAmount = Math.round(row.amount_paid * penaltyBase);
+
     await client.query(
       `UPDATE bookings
        SET status = 'cancelled',
@@ -82,7 +96,7 @@ export async function POST(
     );
     await client.query('COMMIT');
   } catch (err) {
-    await client.query('ROLLBACK');
+    await client.query('ROLLBACK').catch(() => {});
     console.error('no-show booking update failed', err);
     return NextResponse.json({ error: 'Could not process this report. Try again.' }, { status: 500 });
   } finally {

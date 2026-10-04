@@ -30,7 +30,7 @@ export async function POST(request: Request) {
   // Match on order_id, not payment.notes.bookingId: order_id is a required
   // core field on every payment entity, always present. notes are
   // best-effort copied from the order and not guaranteed to propagate
-  // (e.g. webhook replay, some payment methods) — relying on them meant a
+  // (e.g. webhook replay, some payment methods), relying on them meant a
   // captured payment could silently never flip the booking to 'active',
   // leaving the client charged with a booking stuck on 'pending' forever.
   // We already store razorpay_order_id ourselves when the order was created,
@@ -53,10 +53,10 @@ export async function POST(request: Request) {
     // Deliberately no handling for 'payment.failed': a failed attempt
     // doesn't need any booking update. Status is already 'pending', and
     // create-order already reuses the existing razorpay_order_id for a
-    // retry — Razorpay allows retrying payment against the same order.
+    // retry, Razorpay allows retrying payment against the same order.
     // (Previously this cleared razorpay_order_id here, but Razorpay can
     // send payment.failed for one attempt and payment.captured for a later
-    // retry on the SAME order_id within one checkout session — clearing it
+    // retry on the SAME order_id within one checkout session, clearing it
     // on failure meant the later captured event could no longer find the
     // booking by order_id, so a payment that actually succeeded would never
     // activate the booking.)

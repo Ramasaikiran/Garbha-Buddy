@@ -1,12 +1,12 @@
 -- 001_init.sql
 -- Base schema for Garba-Buddy, reconstructed from application code and
 -- the later migrations that ALTER these tables. This was originally
--- applied by hand in the Supabase SQL editor and never committed — this
+-- applied by hand in the Supabase SQL editor and never committed, this
 -- file makes the repo self-contained so the DB can be rebuilt from
 -- scratch (e.g. on a new Supabase project).
 --
 -- IMPORTANT: only includes columns that existed BEFORE 002-008 ran.
--- Those files ADD COLUMN on top of this — apply all migrations in
+-- Those files ADD COLUMN on top of this, apply all migrations in
 -- order (001 through the highest number) on a fresh database.
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";

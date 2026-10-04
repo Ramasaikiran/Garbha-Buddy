@@ -21,6 +21,7 @@ export default function BrowsePage() {
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
     setLoading(true);
     setError(false);
     const url = city ? `/api/companions/search?city=${encodeURIComponent(city)}` : '/api/companions/search';
@@ -28,10 +29,18 @@ export default function BrowsePage() {
       .then((r) => r.json().then((data) => ({ ok: r.ok, data })))
       .then(({ ok, data }) => {
         if (!ok) throw new Error(data.error || 'Failed to load');
-        setCompanions(data.companions || []);
+        if (!cancelled) setCompanions(data.companions || []);
       })
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
+      .catch(() => {
+        if (!cancelled) setError(true);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    // Ignore a slow response for a previous city so it can't overwrite newer results.
+    return () => {
+      cancelled = true;
+    };
   }, [city]);
 
   return (

@@ -6,7 +6,7 @@ import { getSupabaseAdmin } from '@/lib/supabase';
 // Account deletion, done as anonymization rather than a hard row delete.
 // bookings.client_id / bookings.companion_id reference users(id) with no
 // ON DELETE CASCADE, so a hard delete throws a foreign-key error for
-// anyone with booking history — and even where it wouldn't, our own
+// anyone with booking history, and even where it wouldn't, our own
 // privacy policy commits to keeping booking/financial records for
 // dispute and legal-retention purposes. So this clears identity fields
 // on the users row (name, phone, email, Aadhaar images, selfie) and

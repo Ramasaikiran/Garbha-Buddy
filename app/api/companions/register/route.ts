@@ -70,19 +70,6 @@ export async function POST(request: Request) {
     }
     const authUserId = emailVerification.authUserId;
 
-    if (authUserId) {
-      const { error: pwError } = await getSupabaseAdmin().auth.admin.updateUserById(authUserId, {
-        password,
-      });
-      if (pwError) {
-        console.error('companion registration: could not set password', pwError);
-        return NextResponse.json(
-          { error: 'Could not set your password. Try again.' },
-          { status: 500 }
-        );
-      }
-    }
-
     if (!/^\d{10}$/.test(String(phoneNumber))) {
       return NextResponse.json(
         { error: 'Phone number must be exactly 10 digits, numbers only' },
@@ -138,6 +125,20 @@ export async function POST(request: Request) {
         { error: 'This email is already registered to another account' },
         { status: 409 }
       );
+    }
+
+    // Set the password only after every check above has passed.
+    if (authUserId) {
+      const { error: pwError } = await getSupabaseAdmin().auth.admin.updateUserById(authUserId, {
+        password,
+      });
+      if (pwError) {
+        console.error('companion registration: could not set password', pwError);
+        return NextResponse.json(
+          { error: 'Could not set your password. Try again.' },
+          { status: 500 }
+        );
+      }
     }
 
     const client = await db.connect();

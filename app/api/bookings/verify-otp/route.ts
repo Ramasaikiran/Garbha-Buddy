@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { getSession } from '@/lib/session';
+import { timingSafeEqual } from 'crypto';
 
 export async function POST(request: Request) {
   try {
@@ -9,7 +10,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Not logged in' }, { status: 401 });
     }
 
-    const { bookingId, enteredOtp } = await request.json();
+    const { bookingId, enteredOtp: rawOtp } = await request.json().catch(() => ({} as any));
+    const enteredOtp = rawOtp == null ? '' : String(rawOtp).trim();
     if (!bookingId || !enteredOtp) {
       return NextResponse.json({ error: 'bookingId and enteredOtp required' }, { status: 400 });
     }
@@ -30,11 +32,19 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-    if (booking.rows[0].otp_code !== enteredOtp) {
+    const expected = Buffer.from(String(booking.rows[0].otp_code ?? ''));
+    const given = Buffer.from(enteredOtp);
+    if (expected.length !== given.length || !timingSafeEqual(expected, given)) {
       return NextResponse.json({ error: 'Invalid OTP' }, { status: 400 });
     }
 
-    await db.query(`UPDATE bookings SET status = 'completed' WHERE id = $1`, [bookingId]);
+    const done = await db.query(
+      `UPDATE bookings SET status = 'completed' WHERE id = $1 AND status = 'active'`,
+      [bookingId]
+    );
+    if (!done.rowCount) {
+      return NextResponse.json({ error: 'Booking is no longer active' }, { status: 409 });
+    }
 
     return NextResponse.json({ success: true, message: 'Checked in. Enjoy the night!' });
   } catch (err) {

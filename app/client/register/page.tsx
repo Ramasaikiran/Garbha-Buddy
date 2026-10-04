@@ -39,6 +39,8 @@ function ClientRegisterForm() {
   const [pendingBookingId, setPendingBookingId] = useState<string | null>(null);
   const [companionPreference, setCompanionPreference] = useState<string | null>(null);
   const [companionName, setCompanionName] = useState('');
+  const [availableDates, setAvailableDates] = useState<string[]>([]);
+  const [bookingDate, setBookingDate] = useState('');
   const [razorpayReady, setRazorpayReady] = useState(false);
 
   const [emailOtpStatus, setEmailOtpStatus] = useState<'idle' | 'sending' | 'sent' | 'verifying' | 'verified'>('idle');
@@ -99,6 +101,7 @@ function ClientRegisterForm() {
         if (data.companion) {
           setCompanionPreference(data.companion.preference);
           setCompanionName(data.companion.name);
+          setAvailableDates(data.companion.availableDates || []);
         }
       });
   }, [companionId]);
@@ -195,6 +198,10 @@ function ClientRegisterForm() {
       setError('Passwords must match and be at least 8 characters.');
       return;
     }
+    if (companionId && !bookingDate) {
+      setError('Choose your Garba date to continue');
+      return;
+    }
     if (companionId && !liabilityAccepted) {
       setError('Please confirm the ticket liability terms to continue');
       return;
@@ -208,6 +215,7 @@ function ClientRegisterForm() {
         body: JSON.stringify({
           ...form,
           companionId,
+          bookingDate: companionId ? bookingDate : undefined,
           ticketLiabilityAccepted: liabilityAccepted,
           emailVerificationToken,
         }),
@@ -503,6 +511,39 @@ function ClientRegisterForm() {
                   </Field>
                 </div>
               </div>
+
+              {companionId && !genderBlocked && (
+                <Field label="Garba date">
+                  {availableDates.length > 0 ? (
+                    <select
+                      required
+                      value={bookingDate}
+                      onChange={(e) => setBookingDate(e.target.value)}
+                      className="field-input"
+                    >
+                      <option value="">Choose a date</option>
+                      {availableDates.map((d) => (
+                        <option key={d} value={d}>
+                          {new Date(d + 'T00:00:00').toLocaleDateString('en-IN', {
+                            weekday: 'short',
+                            day: 'numeric',
+                            month: 'short',
+                          })}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      required
+                      type="date"
+                      min={new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' })}
+                      value={bookingDate}
+                      onChange={(e) => setBookingDate(e.target.value)}
+                      className="field-input"
+                    />
+                  )}
+                </Field>
+              )}
 
               {companionId && !genderBlocked && (
                 <label className="flex items-start gap-2.5 text-xs" style={{ color: 'var(--ink-60)' }}>

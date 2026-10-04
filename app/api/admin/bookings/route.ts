@@ -22,7 +22,7 @@ export async function GET(request: Request) {
   const stats = await db.query(
     `SELECT
        COUNT(*)::int AS total_bookings,
-       COALESCE(SUM(amount_paid) FILTER (WHERE status <> 'cancelled'), 0)::int AS total_revenue,
+       COALESCE(SUM(amount_paid) FILTER (WHERE status IN ('active', 'completed')), 0)::int AS total_revenue,
        COUNT(*) FILTER (WHERE status = 'pending')::int AS pending_count,
        COUNT(*) FILTER (WHERE status = 'active')::int AS active_count,
        COUNT(*) FILTER (WHERE status = 'completed')::int AS completed_count,

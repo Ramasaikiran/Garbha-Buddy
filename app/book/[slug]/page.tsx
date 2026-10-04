@@ -6,8 +6,8 @@ import BookButton from './book-button';
 const SITE_URL = 'https://garbabuddy.lol';
 
 const TIER_LABEL: Record<string, string> = {
-  gold: 'Gold · ₹999 / 2hr',
-  silver: 'Silver · ₹1,499 / 4hr',
+  gold: 'Gold · ₹999 / 4hr',
+  silver: 'Silver · ₹1,499 / 6hr',
   diamond: 'Diamond · ₹1,999 / full night',
 };
 

@@ -5,8 +5,8 @@ import Link from 'next/link';
 import DeleteAccountSection from '@/components/DeleteAccountSection';
 
 const TIER_LABEL: Record<string, string> = {
-  gold: 'Gold · ₹999 / 2hr',
-  silver: 'Silver · ₹1,499 / 4hr',
+  gold: 'Gold · ₹999 / 4hr',
+  silver: 'Silver · ₹1,499 / 6hr',
   diamond: 'Diamond · ₹1,999 / full night',
 };
 

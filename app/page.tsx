@@ -6,13 +6,13 @@ const TIERS = [
   {
     name: 'Gold',
     price: '₹999',
-    duration: '2 hours',
+    duration: '4 hours',
     blurb: 'Standard companion. Simple booking. Gate check-in.',
   },
   {
     name: 'Silver',
     price: '₹1,499',
-    duration: '4 hours',
+    duration: '6 hours',
     blurb: '2+ years experience. Icebreaker call first. Crash course on arrival.',
   },
   {

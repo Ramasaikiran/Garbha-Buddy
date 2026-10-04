@@ -15,8 +15,8 @@ const CITIES = [
   'Mysuru', 'Dehradun', 'Noida', 'Gurugram', 'Gandhinagar', 'Anand', 'Bhavnagar', 'Jamnagar',
 ];
 const TIERS = [
-  { value: 'gold', label: 'Gold · ₹999 / 2hr' },
-  { value: 'silver', label: 'Silver · ₹1,499 / 4hr' },
+  { value: 'gold', label: 'Gold · ₹999 / 4hr' },
+  { value: 'silver', label: 'Silver · ₹1,499 / 6hr' },
   { value: 'diamond', label: 'Diamond · ₹1,999 / full night' },
 ];
 const STEP_LABELS = ['Basics', 'Dance & pricing', 'Verify identity'];

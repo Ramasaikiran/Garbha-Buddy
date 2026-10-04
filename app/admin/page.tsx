@@ -203,7 +203,7 @@ export default function AdminPage() {
                   <Stat label="Cancelled" value={stats.cancelled_count} />
                 </StatGroup>
                 <StatGroup title="Payouts">
-                  <Stat label="Pending" value={stats.payout_pending_count} />
+                  <Stat label="Awaiting payment" value={stats.payout_pending_count} />
                   <Stat label="In escrow" value={stats.payout_escrow_count} />
                   <Stat label="Paid out" value={stats.payout_paid_count} />
                   <Stat label="Refunded" value={stats.payout_refunded_count} />

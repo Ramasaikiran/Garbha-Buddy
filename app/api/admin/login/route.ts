@@ -20,7 +20,8 @@ export async function POST(request: Request) {
     );
     const admin = result.rows[0];
     if (!admin) {
-      return NextResponse.json({ error: 'Incorrect email or password' }, { status: 401 });
+      console.error('admin login: no admin_users row for', email);
+      return NextResponse.json({ error: 'Incorrect email or password [DEBUG: not in admin_users]' }, { status: 401 });
     }
 
     // Supabase verifies the credential itself.
@@ -63,7 +64,9 @@ export async function POST(request: Request) {
     }
 
     if (!authenticated) {
-      return NextResponse.json({ error: 'Incorrect email or password' }, { status: 401 });
+      const why = `supabase: ${error?.message ?? 'n/a'}; legacy hash: ${admin.password_hash ? 'present, no match' : 'none'}; linked: ${admin.auth_user_id ? 'yes' : 'no'}`;
+      console.error('admin login failed:', why);
+      return NextResponse.json({ error: `Incorrect email or password [DEBUG: ${why}]` }, { status: 401 });
     }
 
     const session = await createAdminSession({ id: admin.id, email: admin.email });

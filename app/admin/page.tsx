@@ -11,7 +11,8 @@ const STATUS_STYLE: Record<string, { bg: string; color: string }> = {
 };
 
 const TABS = [
-  { key: 'companions', label: 'Companions' },
+  { key: 'companions', label: 'Pending' },
+  { key: 'active', label: 'Active' },
   { key: 'bookings', label: 'Bookings' },
   { key: 'deletions', label: 'Deletions' },
 ] as const;
@@ -21,6 +22,7 @@ type Tab = (typeof TABS)[number]['key'];
 export default function AdminPage() {
   const [tab, setTab] = useState<Tab>('companions');
   const [pending, setPending] = useState<any[]>([]);
+  const [active, setActive] = useState<any[]>([]);
   const [bookings, setBookings] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [deletionRequests, setDeletionRequests] = useState<any[]>([]);
@@ -36,6 +38,7 @@ export default function AdminPage() {
     }
     const data = await res.json();
     setPending(data.pending || []);
+    setActive(data.active || []);
   }
 
   async function loadBookings() {
@@ -76,6 +79,19 @@ export default function AdminPage() {
     setPending((p) => p.filter((c) => c.id !== companionId));
   }
 
+  async function deactivate(companionId: string) {
+    const res = await fetch('/api/admin/companions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ companionId, approve: false }),
+    });
+    if (res.status === 401) {
+      router.push('/admin/login');
+      return;
+    }
+    setActive((a) => a.filter((c) => c.id !== companionId));
+  }
+
   async function decideDeletion(requestId: string, approve: boolean) {
     setDeletionError((e) => ({ ...e, [requestId]: '' }));
     const res = await fetch('/api/admin/deletion-requests', {
@@ -110,6 +126,7 @@ export default function AdminPage() {
 
   const tabCount: Record<Tab, number> = {
     companions: pending.length,
+    active: active.length,
     bookings: bookings.length,
     deletions: deletionRequests.length,
   };
@@ -183,6 +200,44 @@ export default function AdminPage() {
                   </button>
                   <button onClick={() => decide(c.id, false)} className="btn-secondary !px-4 !py-1.5 !text-xs">
                     Reject
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {tab === 'active' && (
+          <div className="mt-6 space-y-3">
+            {active.length === 0 && <EmptyState text="No approved companions yet." />}
+            {active.map((c) => (
+              <div key={c.id} className="card p-4 sm:p-5">
+                <div className="flex items-baseline justify-between gap-3">
+                  <p className="font-medium">{c.name}</p>
+                  <span
+                    className="shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize"
+                    style={{ background: 'rgba(168, 117, 44, 0.12)', color: 'var(--gold-deep)' }}
+                  >
+                    {c.tier}
+                  </span>
+                </div>
+                <p className="mt-0.5 text-sm" style={{ color: 'var(--ink-40)' }}>
+                  {c.city} · {c.phone_number} · {c.email}
+                </p>
+                {c.slug && (
+                  <a
+                    href={`/book/${c.slug}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-2 inline-block text-sm underline"
+                    style={{ color: 'var(--gold-deep)' }}
+                  >
+                    View public profile
+                  </a>
+                )}
+                <div className="mt-4 flex gap-2 border-t pt-3" style={{ borderColor: 'var(--line)' }}>
+                  <button onClick={() => deactivate(c.id)} className="btn-secondary !px-4 !py-1.5 !text-xs">
+                    Deactivate
                   </button>
                 </div>
               </div>

@@ -1,28 +1,68 @@
 import { NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
 import { db } from '@/lib/db';
 import { getSupabaseAdmin } from '@/lib/supabase';
 import { createAdminSession, ADMIN_COOKIE_NAME } from '@/lib/admin-session';
 
 export async function POST(request: Request) {
   try {
-    const { email, password } = await request.json();
+    const body = await request.json();
+    const password: string = body.password;
+    const email: string = String(body.email || '').trim().toLowerCase();
     if (!email || !password) {
       return NextResponse.json({ error: 'Email and password required' }, { status: 400 });
     }
 
-    // Supabase verifies the credential itself. We never see or store the password.
-    const { data, error } = await getSupabaseAdmin().auth.signInWithPassword({ email, password });
-    if (error || !data.user) {
-      return NextResponse.json({ error: 'Incorrect email or password' }, { status: 401 });
-    }
-
-    // Being a valid Supabase login isn't enough. Must also be a designated admin.
+    const supabase = getSupabaseAdmin();
     const result = await db.query(
-      'SELECT id, email FROM admin_users WHERE auth_user_id = $1 OR email = $2',
-      [data.user.id, email]
+      'SELECT id, email, auth_user_id, password_hash FROM admin_users WHERE LOWER(email) = $1',
+      [email]
     );
     const admin = result.rows[0];
     if (!admin) {
+      return NextResponse.json({ error: 'Incorrect email or password' }, { status: 401 });
+    }
+
+    // Supabase verifies the credential itself.
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    let authenticated = !error && !!data.user;
+
+    // Legacy admins were created before the Supabase migration. They have a
+    // bcrypt hash in admin_users but no Supabase credential, so the check
+    // above always fails for them. Verify the old hash, then migrate them.
+    if (!authenticated && admin.password_hash) {
+      const legacyOk = await bcrypt.compare(password, admin.password_hash);
+      if (legacyOk) {
+        let authUserId: string | null = admin.auth_user_id;
+        if (authUserId) {
+          const { error: updErr } = await supabase.auth.admin.updateUserById(authUserId, {
+            password,
+            email_confirm: true,
+          });
+          if (updErr) console.error('admin login: legacy password sync failed', updErr);
+        } else {
+          const { data: created, error: createErr } = await supabase.auth.admin.createUser({
+            email,
+            password,
+            email_confirm: true,
+          });
+          if (createErr || !created.user) {
+            console.error('admin login: legacy migration createUser failed', createErr);
+          } else {
+            authUserId = created.user.id;
+          }
+        }
+        if (authUserId) {
+          await db.query(
+            'UPDATE admin_users SET auth_user_id = $1, password_hash = NULL WHERE id = $2',
+            [authUserId, admin.id]
+          );
+        }
+        authenticated = true;
+      }
+    }
+
+    if (!authenticated) {
       return NextResponse.json({ error: 'Incorrect email or password' }, { status: 401 });
     }
 

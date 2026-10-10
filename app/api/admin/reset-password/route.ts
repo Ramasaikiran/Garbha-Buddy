@@ -15,7 +15,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const admin = await db.query('SELECT id FROM admin_users WHERE email = $1', [email]);
+    const admin = await db.query('SELECT id FROM admin_users WHERE LOWER(email) = LOWER($1)', [email]);
     if (!admin.rows[0]) {
       return NextResponse.json({ error: 'Invalid or expired code' }, { status: 400 });
     }

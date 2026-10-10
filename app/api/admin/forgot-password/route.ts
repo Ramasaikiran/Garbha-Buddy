@@ -11,7 +11,7 @@ export async function POST(request: Request) {
 
     // Only send a reset if this email is actually a designated admin.
     // but don't reveal which emails are/aren't admins to a caller.
-    const admin = await db.query('SELECT id FROM admin_users WHERE email = $1', [email]);
+    const admin = await db.query('SELECT id FROM admin_users WHERE LOWER(email) = LOWER($1)', [email]);
     if (!admin.rows[0]) {
       return NextResponse.json({ success: true }); // same response either way
     }

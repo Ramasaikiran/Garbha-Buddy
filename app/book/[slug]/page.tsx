@@ -87,6 +87,9 @@ export default async function BookCompanionPage({ params }: { params: { slug: st
           <img
             src={companion.profile_photo_url}
             alt={`${companion.name}, Garba dance companion in ${companion.city}`}
+            width={512}
+            height={224}
+            decoding="async"
             className="mt-4 h-56 w-full rounded-xl object-cover"
             style={{ border: '1px solid var(--line)' }}
           />

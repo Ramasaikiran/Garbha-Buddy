@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Script from 'next/script';
+import type { Metadata } from 'next';
 import { ShieldIcon, MatchIcon, LockIcon, ArrowIcon } from '@/components/icons';
 
 const TIERS = [
@@ -77,7 +78,34 @@ const FAQS = [
   },
 ];
 
+export const metadata: Metadata = {
+  alternates: { canonical: 'https://garbabuddy.lol' },
+};
+
+const SITE_URL = 'https://garbabuddy.lol';
+
 export default function HomePage() {
+  const serviceJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: 'Garba Buddy',
+    serviceType: 'Dance companion booking',
+    areaServed: [
+      { '@type': 'Country', name: 'India' },
+      'Mumbai', 'Delhi NCR', 'Bengaluru', 'Hyderabad', 'Ahmedabad', 'Chennai',
+      'Kolkata', 'Pune', 'Jaipur', 'Surat', 'Lucknow', 'Noida', 'Gurugram',
+      'Vadodara', 'Rajkot', 'Nagpur', 'Indore', 'Bhopal', 'Coimbatore', 'Kochi',
+      'Chandigarh', 'Guwahati',
+    ],
+    provider: { '@type': 'Organization', name: 'Garba Buddy', url: SITE_URL },
+    offers: [
+      { '@type': 'Offer', url: SITE_URL + '/browse', name: 'Gold', price: '999', priceCurrency: 'INR' },
+      { '@type': 'Offer', url: SITE_URL + '/browse', name: 'Silver', price: '1499', priceCurrency: 'INR' },
+      { '@type': 'Offer', url: SITE_URL + '/browse', name: 'Diamond', price: '1999', priceCurrency: 'INR' },
+    ],
+  };
+
+
   const faqJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -94,6 +122,12 @@ export default function HomePage() {
         id="faq-jsonld"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+
+      <Script
+        id="service-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceJsonLd) }}
       />
 
       {/* NAV */}

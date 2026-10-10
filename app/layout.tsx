@@ -63,37 +63,12 @@ export const metadata: Metadata = {
     description: 'Book a verified local Garba dance companion this Navratri.',
   },
   robots: { index: true, follow: true },
-  alternates: { canonical: SITE_URL },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Service',
-    name: 'Garba Buddy',
-    serviceType: 'Dance companion booking',
-    areaServed: [
-      { '@type': 'Country', name: 'India' },
-      'Mumbai', 'Delhi NCR', 'Bengaluru', 'Hyderabad', 'Ahmedabad', 'Chennai',
-      'Kolkata', 'Pune', 'Jaipur', 'Surat', 'Lucknow', 'Noida', 'Gurugram',
-      'Vadodara', 'Rajkot', 'Nagpur', 'Indore', 'Bhopal', 'Coimbatore', 'Kochi',
-      'Chandigarh', 'Guwahati',
-    ],
-    provider: { '@type': 'Organization', name: 'Garba Buddy', url: SITE_URL },
-    offers: [
-      { '@type': 'Offer', name: 'Gold', price: '999', priceCurrency: 'INR' },
-      { '@type': 'Offer', name: 'Silver', price: '1499', priceCurrency: 'INR' },
-      { '@type': 'Offer', name: 'Diamond', price: '1999', priceCurrency: 'INR' },
-    ],
-  };
-
   return (
     <html lang="en" className={`${fraunces.variable} ${manrope.variable}`}>
       <body>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
         {children}
       </body>
     </html>

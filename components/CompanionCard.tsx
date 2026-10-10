@@ -24,6 +24,10 @@ export default function CompanionCard({
         <img
           src={companion.profile_photo_url}
           alt={companion.name}
+          width={56}
+          height={56}
+          loading="lazy"
+          decoding="async"
           className="h-14 w-14 shrink-0 rounded-full object-cover"
           style={{ border: '1px solid var(--line)' }}
         />

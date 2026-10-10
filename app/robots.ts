@@ -3,7 +3,7 @@ import type { MetadataRoute } from 'next';
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
-      { userAgent: '*', allow: '/', disallow: ['/admin', '/dashboard', '/bookings'] },
+      { userAgent: '*', allow: '/', disallow: ['/admin', '/dashboard', '/bookings', '/api/', '/login', '/client'] },
     ],
     sitemap: 'https://garbabuddy.lol/sitemap.xml',
   };

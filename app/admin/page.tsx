@@ -83,7 +83,7 @@ export default function AdminPage() {
     const res = await fetch('/api/admin/companions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ companionId, approve: false }),
+      body: JSON.stringify({ companionId, approve: false, deactivate: true }),
     });
     if (res.status === 401) {
       router.push('/admin/login');
